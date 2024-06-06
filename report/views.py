@@ -3,12 +3,12 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import status
 from django.http import HttpResponse
-from .utils import generate_csv_report
+from .utils import generate_csv_report, count_billboards
 from .serializers import ReportSerializer
 from drf_spectacular.utils import extend_schema
 
 @extend_schema(
-    description="The endpoint is use to download in csv format by date(week, month and year) and vacancy eg,    \n\n http://localhost:8000/api/download-report/?time_filter=week \n\n http://localhost:8000/api/download-report/?time_filter=month  \n\n http://localhost:8000/api/download-report/?time_filter=year \n\n http://localhost:8000/api/download-report/?vacancy=vacant \n\n http://localhost:8000/api/download-report/?vacancy=occupied \n\n http://localhost:8000/api/download-report/?time_filter=week&vacancy=vacant \n\n http://localhost:8000/api/download-report/?time_filter=month&vacancy=occupied",
+    description="The endpoint is use to download in csv format by date(week, month and year) and vacancy eg,    \n\n http://localhost:8000/report/download-report/?time_filter=week \n\n http://localhost:8000/report/download-report/?time_filter=month  \n\n http://localhost:8000/report/download-report/?time_filter=year \n\n http://localhost:8000/report/download-report/?vacancy=vacant \n\n http://localhost:8000/report/download-report/?vacancy=occupied \n\n http://localhost:8000/report/download-report/?time_filter=week&vacancy=vacant \n\n http://localhost:8000/report/download-report/?time_filter=month&vacancy=occupied",
     summary='Media asset report download'
 )
 class ReportDownloadView(APIView):
@@ -39,3 +39,27 @@ class ReportDownloadView(APIView):
         filename += '.csv'
         response['Content-Disposition'] = f'attachment; filename="{filename}"'
         return response
+
+@extend_schema(
+    description="The endpoint return sum total of upploaded user media assets by date(week, month and year) and vacancy eg,    \n\n http://localhost:8000/report/count-assets/?time_filter=week \n\n http://localhost:8000/report/count-assets/?time_filter=month  \n\n http://localhost:8000/report/count-assets/?time_filter=year \n\n http://localhost:8000/report/count-assets/?vacancy=vacant \n\n http://localhost:8000/report/count-assets/?vacancy=occupied \n\n http://localhost:8000/api/download-report/?time_filter=week&vacancy=vacant",
+    summary='Count uploaded media assets'
+)
+class CountReportView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ReportSerializer
+
+    def get(self, request, format=None):
+        user = request.user
+        if not user.is_authenticated:
+            return Response({'error': 'Authentication required.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        time_filter = request.query_params.get('time_filter')
+        vacancy = request.query_params.get('vacancy')
+
+        if not time_filter and not vacancy:
+            return Response({'error': 'At least one of time_filter or vacancy is required as a parameter.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        billboards = count_billboards(user, time_filter, vacancy)
+        count = billboards.count()
+
+        return Response({'count': count}, status=status.HTTP_200_OK)

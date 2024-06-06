@@ -27,6 +27,7 @@ def filter_billboards(user, time_filter=None, vacancy=None):
 
     return queryset
 
+
 def generate_csv_report(user, time_filter=None, vacancy=None):
     billboards = filter_billboards(user, time_filter, vacancy)
     
@@ -48,5 +49,27 @@ def generate_csv_report(user, time_filter=None, vacancy=None):
             billboard.user,
             billboard.date,
         ])
-    
     return output.getvalue()
+
+
+def count_billboards(user, time_filter=None, vacancy=None):
+    now = timezone.now()
+    
+    if time_filter == 'week':
+        start_date = now - timedelta(days=now.weekday())
+    elif time_filter == 'month':
+        start_date = now.replace(day=1)
+    elif time_filter == 'year':
+        start_date = now.replace(month=1, day=1)
+    else:
+        start_date = None
+
+    queryset = Billboards.objects.filter(user=user)
+
+    if start_date:
+        queryset = queryset.filter(date__gte=start_date)
+
+    if vacancy:
+        queryset = queryset.filter(vacancy=vacancy)
+
+    return queryset
