@@ -40,6 +40,7 @@ class ReportDownloadView(APIView):
         response['Content-Disposition'] = f'attachment; filename="{filename}"'
         return response
 
+
 @extend_schema(
     description="The endpoint return sum total of upploaded user media assets by date(week, month and year) and vacancy eg,    \n\n http://localhost:8000/report/count-assets/?time_filter=week \n\n http://localhost:8000/report/count-assets/?time_filter=month  \n\n http://localhost:8000/report/count-assets/?time_filter=year \n\n http://localhost:8000/report/count-assets/?vacancy=vacant \n\n http://localhost:8000/report/count-assets/?vacancy=occupied \n\n http://localhost:8000/api/download-report/?time_filter=week&vacancy=vacant",
     summary='Count uploaded media assets'

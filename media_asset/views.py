@@ -55,7 +55,7 @@ class AssetListAPIView(ListAPIView):
 
 
 @extend_schema(
-    description="The endpoint is use to filter media assets by (asset type, zone and vacancy).",
+    description="The endpoint is use to filter media assets by (asset type, zone, status and vacancy).",
     summary='Media Search(Filter) endpoint'
 )
 class AssetSearchAPIView(APIView):
@@ -67,7 +67,8 @@ class AssetSearchAPIView(APIView):
         asset_type = request.query_params.get('asset_type', None)
         zone = request.query_params.get('zone', None)
         vacancy = request.query_params.get('vacancy', None)
-        # city = request.query_params.get('city', None)
+        status = request.query_params.get('status', None)
+
 
         # Filter billboards based on query parameters
         assets = Billboards.objects.filter(user=request.user)
@@ -75,8 +76,8 @@ class AssetSearchAPIView(APIView):
             assets = assets.filter(asset_type=asset_type)
         if zone:
             assets = assets.filter(zone=zone)
-        # if city:
-        #     assets = assets.filter(city__icontains=city)
+        if status:
+            assets = assets.filter(status=status)
         if vacancy is not None:
             assets = assets.filter(vacancy=vacancy)
 
