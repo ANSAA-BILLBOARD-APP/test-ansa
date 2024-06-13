@@ -1,6 +1,11 @@
-from .models import UserZone, Billboards
+from .models import UserZone, Billboards, Zones
 from rest_framework import serializers
 
+
+class ZonesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Zones
+        fields = ['id', 'name']
 
 class UserZoneSerializer(serializers.ModelSerializer):
     class Meta:
@@ -9,6 +14,7 @@ class UserZoneSerializer(serializers.ModelSerializer):
 
 
 class CreateBillboardSerializer(serializers.ModelSerializer):
+    sub_zone = serializers.CharField(source='sub_zone.name')
     
     class Meta:
         model = Billboards

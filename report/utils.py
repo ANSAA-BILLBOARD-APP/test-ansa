@@ -17,18 +17,21 @@ def filter_billboards(user, time_filter=None, vacancy=None):
     else:
         start_date = None
 
+    # Start with all billboards for the given user
     queryset = Billboards.objects.filter(user=user)
 
+    # Apply time filter if provided
     if start_date:
         queryset = queryset.filter(date__gte=start_date)
 
-    if vacancy:
+    # Apply vacancy filter if provided
+    if vacancy is not None:
         queryset = queryset.filter(vacancy=vacancy)
 
     return queryset
 
-
 def generate_csv_report(user, time_filter=None, vacancy=None):
+    # Retrieve the filtered billboards
     billboards = filter_billboards(user, time_filter, vacancy)
     
     output = StringIO()
@@ -49,6 +52,7 @@ def generate_csv_report(user, time_filter=None, vacancy=None):
             billboard.user,
             billboard.date,
         ])
+    
     return output.getvalue()
 
 

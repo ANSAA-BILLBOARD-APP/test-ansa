@@ -33,35 +33,50 @@ class Billboards(models.Model):
 
     STATUS_PENDING = 'pending'
     STATUS_COMPLETED = 'completed'
-    STATUS_CHOICES = [
-        (STATUS_PENDING, _('Pending')),
-        (STATUS_COMPLETED, _('Completed')),
-    ]
+    
+    STATUS_CHOICES = {
+        STATUS_PENDING: _('Pending'),
+        STATUS_COMPLETED: _('Completed'),
+    }
 
     VACANCY_VACANT = 'vacant'
     VACANCY_OCCUPIED = 'occupied'
-    VACANCY_CHOICES = [
-    (VACANCY_VACANT, _('Vacant')),
-    (VACANCY_OCCUPIED, _('Occupied')),
-    ]
 
-    TYPE_ELECTRONIC = 'electronic'
-    TYPE_STATIC = 'static'
-    TYPE_CHOICES = [
-        (TYPE_ELECTRONIC, _('Electronic')),
-        (TYPE_STATIC, _('Static')),
-    ]
+    VACANCY_CHOICES = {
+        VACANCY_VACANT: _('Vacant'),
+        VACANCY_OCCUPIED: _('Occupied'),
+    }
+
+    ELECTRONIC = 'electronic'
+    STATIC = 'static'
+
+    TYPE_CHOICES = {
+        ELECTRONIC: _('Electronic'),
+        STATIC: _('Static')
+    }
+
+
+    # Define constants for categories
+    FREE_STANDING_SIGNS = 'free_standing_signs'
+    PROJECTING_SIGNS = 'projecting_signs'
+    WALL_SIGNS = 'wall_signs'
+    SPECIAL_ADVERTISEMENT = 'special_advertisement'
     
-    CATEGORY_CHOICES = (
-        ('free standing signs','Free standing signs'),
-        ('projecting signs','Projecting signs'),
-        ('wall signs','Wall signs'),
-        ('special advertisement','Special advertisement')
-    )
-    ZONE_CHOICES = (
-        ('normal zone','Normal zone'),
-        ('Restricted zone','Restricted zone')
-    )
+    # Optional: Define a dictionary for lookup by key if needed
+    CATEGORY_CHOICES = {
+        FREE_STANDING_SIGNS: _('Free standing signs'),
+        PROJECTING_SIGNS: _('Projecting signs'),
+        WALL_SIGNS: _('Wall signs'),
+        SPECIAL_ADVERTISEMENT: _('Special advertisement')
+    }
+
+    ZONE_NORMAL = 'normal zone'
+    ZONE_RESTRICTED = 'restricted_zone'
+
+    ZONE_CHOICES = {
+        ZONE_NORMAL: _('Normal zone'),
+        ZONE_RESTRICTED: _('Restricted zone')
+    }
     asset_name = models.CharField(max_length=10, editable=False)
     asset_type = models.CharField(max_length=50, choices=TYPE_CHOICES, blank=True)
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, blank=True)

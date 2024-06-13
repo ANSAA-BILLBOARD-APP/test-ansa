@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'media_asset',
     'report',
     'todo',
+    'target',
+    'django_crontab',
 ]
 
 SPECTACULAR_SETTINGS = {
@@ -49,6 +51,10 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
     # OTHER SETTINGS
 }
+
+CRONJOBS = [
+    ('0 0 1 * *', 'django.core.management.call_command', ['monthly_targets']),
+]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -172,7 +178,6 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 }
-
 
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 

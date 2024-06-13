@@ -16,6 +16,7 @@ urlpatterns = [
     path('todo/', include('todo.urls')),
     path('report/', include('report.urls')),
     path('media-asset/', include("media_asset.urls")),
+    path('target/', include("target.urls")),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
