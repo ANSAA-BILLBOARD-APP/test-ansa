@@ -19,7 +19,7 @@ class CreateBillboardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Billboards
         fields = ['asset_type','category','zone','status','sub_zone','description'
-        ,'vacancy','status','dimension','price','main_image','image_1','image_2','image_3'
+        ,'vacancy','status','dimension','price','main_image_url','image_1_url','image_2_url','image_3_url'
         ,'address','city','state','country','company','phone_number','longitude','latitude','user_id']
 
 
