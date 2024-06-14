@@ -88,10 +88,10 @@ class Billboards(models.Model):
 
     dimension = models.CharField(max_length=50, blank=True)
     price = models.DecimalField(max_digits=30, decimal_places=2, blank=True, null=True)
-    main_image_url = models.URLField(max_length=200, blank=True, null=True)
-    image_1_url = models.URLField(max_length=200, blank=True, null=True)
-    image_2_url = models.URLField(max_length=200, blank=True, null=True)
-    image_3_url = models.URLField(max_length=200, blank=True, null=True)
+    main_image = models.URLField(max_length=200, blank=True, null=True)
+    image_1 = models.URLField(max_length=200, blank=True, null=True)
+    image_2 = models.URLField(max_length=200, blank=True, null=True)
+    image_3 = models.URLField(max_length=200, blank=True, null=True)
     user = models.ForeignKey(AnsaaUser, on_delete=models.CASCADE)
 
     address = models.CharField(max_length=250, blank=True)
