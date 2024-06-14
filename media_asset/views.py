@@ -1,6 +1,7 @@
 from django.shortcuts import render
-from . serializers import CreateBillboardSerializer, AssetSerializer
+from . serializers import CreateBillboardSerializer, AssetSerializer, ZonesSerializer
 from rest_framework.generics import ListAPIView
+from rest_framework import generics
 from rest_framework.generics import RetrieveUpdateAPIView, RetrieveAPIView, CreateAPIView
 from rest_framework.views import APIView
 from rest_framework.request import Request
@@ -10,7 +11,7 @@ from django.utils import timezone
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from authentication.models import AnsaaUser
 from todo.models import Task
-from . models import Billboards
+from . models import Billboards, Zones
 from drf_spectacular.utils import extend_schema
 
 
@@ -83,3 +84,9 @@ class AssetSearchAPIView(APIView):
 
         serializer = AssetSerializer(assets, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ZonesListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Zones.objects.all()
+    serializer_class = ZonesSerializer
