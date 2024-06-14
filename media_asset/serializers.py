@@ -14,7 +14,7 @@ class UserZoneSerializer(serializers.ModelSerializer):
 
 
 class CreateBillboardSerializer(serializers.ModelSerializer):
-    sub_zone = serializers.CharField(source='sub_zone.name')
+    sub_zone = serializers.CharField(source='sub_zone.name', read_only=True)
     
     class Meta:
         model = Billboards
