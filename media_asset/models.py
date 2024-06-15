@@ -61,13 +61,16 @@ class Billboards(models.Model):
     PROJECTING_SIGNS = 'projecting_signs'
     WALL_SIGNS = 'wall_signs'
     SPECIAL_ADVERTISEMENT = 'special_advertisement'
+    BILLBOARD_DESIGNATION = 'billboard_designation'
     
     # Optional: Define a dictionary for lookup by key if needed
     CATEGORY_CHOICES = {
         FREE_STANDING_SIGNS: _('Free standing signs'),
         PROJECTING_SIGNS: _('Projecting signs'),
         WALL_SIGNS: _('Wall signs'),
-        SPECIAL_ADVERTISEMENT: _('Special advertisement')
+        SPECIAL_ADVERTISEMENT: _('Special advertisement'),
+        BILLBOARD_DESIGNATION: _('Billboard_Designation')
+
     }
 
     ZONE_NORMAL = 'normal zone'
@@ -122,4 +125,23 @@ class Billboards(models.Model):
         return self.asset_name
 
 
-    
+
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name 
+
+class Dimensions(models.Model):
+    name = models.CharField(max_length=100, help_text='Name or description of the dimension')
+    min_width = models.FloatField(help_text='Width of the billboard in square meters')
+    max_width = models.FloatField(help_text='Width of the billboard in square meters')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='dimensions', help_text='Category associated with this dimension')
+    price = models.DecimalField(max_digits=10, decimal_places=2, help_text='Price for this dimension')
+
+    class Meta:
+        verbose_name = 'Dimension'
+        verbose_name_plural = 'Dimensions'
+
+    def __str__(self):
+        return f'{self.name} ({self.width}m x {self.height}m)'
