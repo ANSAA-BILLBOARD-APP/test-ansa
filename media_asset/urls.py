@@ -7,4 +7,5 @@ urlpatterns = [
     path('asset/<int:pk>/', views.AssetRetrieveUpdateAPIView.as_view(), name='update_retrieve_asset'),
     path('asset/search/', views.AssetSearchAPIView.as_view(), name='asset_search'),
     path('asset/zones/', views.ZonesListView.as_view(), name='zones-list'),
+    path('asset/dimensions/', views.DimensionsListView.as_view(), name='dimensions-list'),
 ]

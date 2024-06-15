@@ -1,4 +1,4 @@
-from .models import UserZone, Billboards, Zones
+from .models import UserZone, Billboards, Zones, Dimensions
 from rest_framework import serializers
 
 
@@ -22,6 +22,11 @@ class CreateBillboardSerializer(serializers.ModelSerializer):
         ,'vacancy','status','dimension','price','main_image','image_1','image_2','image_3'
         ,'address','city','state','country','company','phone_number','longitude','latitude','user_id']
 
+class DimensionsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Dimensions
+        fields = ['id', 'name', 'min_width', 'max_width', 'category', 'zone', 'price']
 
 class AssetSerializer(serializers.ModelSerializer):
     

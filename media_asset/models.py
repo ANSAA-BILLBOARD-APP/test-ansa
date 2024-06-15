@@ -126,17 +126,40 @@ class Billboards(models.Model):
 
 
 
-class Category(models.Model):
-    name = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.name 
 
 class Dimensions(models.Model):
+
+    # Define constants for categories
+    FREE_STANDING_SIGNS = 'free_standing_signs'
+    PROJECTING_SIGNS = 'projecting_signs'
+    WALL_SIGNS = 'wall_signs'
+    SPECIAL_ADVERTISEMENT = 'special_advertisement'
+    BILLBOARD_DESIGNATION = 'billboard_designation'
+    
+    # Optional: Define a dictionary for lookup by key if needed
+    CATEGORY_CHOICES = {
+        FREE_STANDING_SIGNS: _('Free standing signs'),
+        PROJECTING_SIGNS: _('Projecting signs'),
+        WALL_SIGNS: _('Wall signs'),
+        SPECIAL_ADVERTISEMENT: _('Special advertisement'),
+        BILLBOARD_DESIGNATION: _('Billboard_Designation')
+
+    }
+
+    ZONE_NORMAL = 'normal zone'
+    ZONE_RESTRICTED = 'restricted_zone'
+
+    ZONE_CHOICES = {
+        ZONE_NORMAL: _('Normal zone'),
+        ZONE_RESTRICTED: _('Restricted zone')
+    }
+
     name = models.CharField(max_length=100, help_text='Name or description of the dimension')
-    min_width = models.FloatField(help_text='Width of the billboard in square meters')
-    max_width = models.FloatField(help_text='Width of the billboard in square meters')
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='dimensions', help_text='Category associated with this dimension')
+    min_width = models.FloatField(help_text='Width of the media asset in square meters')
+    max_width = models.FloatField(help_text='Width of the media asset  in square meters')
+    unit = models.CharField(max_length=10)
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, blank=True)
+    zone = models.CharField(max_length=50, choices=ZONE_CHOICES, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, help_text='Price for this dimension')
 
     class Meta:
@@ -144,4 +167,4 @@ class Dimensions(models.Model):
         verbose_name_plural = 'Dimensions'
 
     def __str__(self):
-        return f'{self.name} ({self.width}m x {self.height}m)'
+        return f'{self.name} ({self.min_width}m² and {self.max_width}m²)'

@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from . serializers import CreateBillboardSerializer, AssetSerializer, ZonesSerializer
+from . serializers import CreateBillboardSerializer, AssetSerializer, ZonesSerializer, DimensionsSerializer
 from rest_framework.generics import ListAPIView
 from rest_framework import generics
 from rest_framework.generics import RetrieveUpdateAPIView, RetrieveAPIView, CreateAPIView
@@ -11,7 +11,7 @@ from django.utils import timezone
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from authentication.models import AnsaaUser
 from todo.models import Task
-from .models import Billboards, Zones
+from .models import Billboards, Zones, Dimensions
 from drf_spectacular.utils import extend_schema
 
 
@@ -85,60 +85,12 @@ class AssetSearchAPIView(APIView):
         serializer = self.serializer_class(assets, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
-
-# class AssetSearchAPIView(APIView):
-#     permission_classes = [IsAuthenticated]
-#     serializer_class = AssetSerializer
-
-#     def get(self, request, *args, **kwargs):
-#         try:
-#             # Retrieve query parameters
-#             asset_type = request.query_params.get('asset_type', None)
-#             zone = request.query_params.get('zone', None)
-#             vacancy = request.query_params.get('vacancy', None)
-#             status = request.query_params.get('status', None)
-
-#             # Filter billboards based on query parameters
-#             assets = Billboards.objects.filter(user=request.user)
-            
-#             if asset_type:
-#                 if not Billboards.objects.filter(asset_type=asset_type).exists():
-#                     raise ValidationError(f"Invalid asset_type: {asset_type}")
-#                 assets = assets.filter(asset_type=asset_type)
-            
-#             if zone:
-#                 if not Billboards.objects.filter(zone=zone).exists():
-#                     raise ValidationError(f"Invalid zone: {zone}")
-#                 assets = assets.filter(zone=zone)
-            
-#             if status:
-#                 if not Billboards.objects.filter(status=status).exists():
-#                     raise ValidationError(f"Invalid status: {status}")
-#                 assets = assets.filter(status=status)
-            
-#             if vacancy is not None:
-#                 try:
-#                     vacancy = bool(int(vacancy))
-#                 except ValueError:
-#                     raise ValidationError(f"Invalid vacancy value: {vacancy}, must be 0 or 1")
-#                 assets = assets.filter(vacancy=vacancy)
-
-#             # Serialize and return the data
-#             serializer = AssetSerializer(assets, many=True)
-#             return Response(serializer.data, status=status.HTTP_200_OK)
-
-#         except ValidationError as e:
-#             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-#         except Billboards.DoesNotExist:
-#             return Response({'error': 'Billboards not found'}, status=status.HTTP_404_NOT_FOUND)
-
-#         except Exception as e:
-#             return Response({'error': 'An unexpected error occurred'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
 class ZonesListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Zones.objects.all()
     serializer_class = ZonesSerializer
+
+class DimensionsListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Dimensions.objects.all()
+    serializer_class = DimensionsSerializer
