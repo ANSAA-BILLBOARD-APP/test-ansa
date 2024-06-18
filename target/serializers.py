@@ -4,4 +4,4 @@ from .models import MonthlyTarget
 class MonthlyTargetSerializer(serializers.ModelSerializer):
     class Meta:
         model = MonthlyTarget
-        fields = ['user', 'month', 'year, 'target']
+        fields = ['user', 'month', 'year', 'target']

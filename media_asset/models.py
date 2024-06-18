@@ -69,11 +69,11 @@ class Billboards(models.Model):
         PROJECTING_SIGNS: _('Projecting signs'),
         WALL_SIGNS: _('Wall signs'),
         SPECIAL_ADVERTISEMENT: _('Special advertisement'),
-        BILLBOARD_DESIGNATION: _('Billboard_Designation')
+        BILLBOARD_DESIGNATION: _('Billboard Designation')
 
     }
 
-    ZONE_NORMAL = 'normal zone'
+    ZONE_NORMAL = 'normal_zone'
     ZONE_RESTRICTED = 'restricted_zone'
 
     ZONE_CHOICES = {
@@ -146,7 +146,7 @@ class Dimensions(models.Model):
 
     }
 
-    ZONE_NORMAL = 'normal zone'
+    ZONE_NORMAL = 'normal_zone'
     ZONE_RESTRICTED = 'restricted_zone'
 
     ZONE_CHOICES = {
