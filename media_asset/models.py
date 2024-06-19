@@ -60,7 +60,6 @@ class Billboards(models.Model):
     FREE_STANDING_SIGNS = 'free_standing_signs'
     PROJECTING_SIGNS = 'projecting_signs'
     WALL_SIGNS = 'wall_signs'
-    SPECIAL_ADVERTISEMENT = 'special_advertisement'
     BILLBOARD_DESIGNATION = 'billboard_designation'
     
     # Optional: Define a dictionary for lookup by key if needed
@@ -68,7 +67,6 @@ class Billboards(models.Model):
         FREE_STANDING_SIGNS: _('Free standing signs'),
         PROJECTING_SIGNS: _('Projecting signs'),
         WALL_SIGNS: _('Wall signs'),
-        SPECIAL_ADVERTISEMENT: _('Special advertisement'),
         BILLBOARD_DESIGNATION: _('Billboard Designation')
 
     }
@@ -133,7 +131,6 @@ class Dimensions(models.Model):
     FREE_STANDING_SIGNS = 'free_standing_signs'
     PROJECTING_SIGNS = 'projecting_signs'
     WALL_SIGNS = 'wall_signs'
-    SPECIAL_ADVERTISEMENT = 'special_advertisement'
     BILLBOARD_DESIGNATION = 'billboard_designation'
     
     # Optional: Define a dictionary for lookup by key if needed
@@ -141,8 +138,7 @@ class Dimensions(models.Model):
         FREE_STANDING_SIGNS: _('Free standing signs'),
         PROJECTING_SIGNS: _('Projecting signs'),
         WALL_SIGNS: _('Wall signs'),
-        SPECIAL_ADVERTISEMENT: _('Special advertisement'),
-        BILLBOARD_DESIGNATION: _('Billboard_Designation')
+        BILLBOARD_DESIGNATION: _('Billboard Designation')
 
     }
 
