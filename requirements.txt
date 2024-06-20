@@ -3,6 +3,7 @@ django-phonenumber-field==7.3.0
 djangorestframework==3.15.1
 djangorestframework-simplejwt==5.3.1
 drf-spectacular==0.27.2
+django-admin-material-dashboard
 django-crontab
 jsonschema==4.21.1
 jsonschema-specifications==2023.12.1
