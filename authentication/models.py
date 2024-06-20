@@ -66,16 +66,16 @@ GENDER_CHOICES = [
         ('female', 'Female'),
     ]
 
-# Setting profile picture path
+# # Setting profile picture path
 def get_profile_image_filepath(self, filename):
     return 'profile_pictures/' + str(self.pk) + '/profile_image.png'
 
 # getting default profile picture
 def get_default_profile_picture(gender):
     if gender == 'male':
-        return 'default_profile/male.jpg'
+        return 'https://test-ansa.onrender.com/default_profile/male.jpg'
     else:
-        return 'default_profile/female.jpg'
+        return 'https://test-ansa.onrender.com/default_profile/female.jpg'
 
 class AnsaaUser(AbstractBaseUser, PermissionsMixin):
     """
@@ -87,7 +87,7 @@ class AnsaaUser(AbstractBaseUser, PermissionsMixin):
     fullname = models.CharField(max_length=150, blank=True)
     start_date = models.DateTimeField(default=timezone.now)
     gender = models.TextField(choices=GENDER_CHOICES, null=True, blank=True)
-    picture = models.ImageField(upload_to=get_profile_image_filepath, blank=True)
+    picture = models.URLField(max_length=500, blank=True, default='')
     is_staff = models.BooleanField(_('staff status'), default=False)
     is_active = models.BooleanField(_('active'), default=True)
     # zones = models.ManyToManyField('Zones', through='UserZone', related_name='users')

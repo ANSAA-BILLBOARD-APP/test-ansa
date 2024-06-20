@@ -183,12 +183,14 @@ class UserProfileViews(APIView):
         user_profile.picture = picture
         user_profile.save()
 
-        try:
-            update_profile_task = Task.objects.get(user=user, title="Add a Profile Picture")
-            update_profile_task.is_completed = True
-            update_profile_task.save()
-        except Task.DoesNotExist:
-            return Response({'error': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
+        update_profile_task = Task.objects.get(user=user, title="Add a Profile Picture")
+
+        if update_profile_task:
+            if not update_profile_task.is_completed:
+                update_profile_task.is_completed = True
+                update_profile_task.save()
+        else:
+            pass
 
         serializer = ProfileSerializer(user_profile)
         return Response(serializer.data)

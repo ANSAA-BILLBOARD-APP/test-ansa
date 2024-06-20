@@ -34,12 +34,11 @@ class LoginSerializer(serializers.Serializer):
         fields= ['email','phone_number']
 
 class ProfileSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(source='email.email', read_only=True)
-    phone_number = serializers.CharField()
-    
+
     class Meta:
         model = AnsaaUser
         fields = ['user_id', 'email', 'phone_number', 'fullname', 'picture', 'gender']
+        read_only_fields = ['email', 'user_id']
 
 
 class LogoutSerializer(serializers.Serializer):

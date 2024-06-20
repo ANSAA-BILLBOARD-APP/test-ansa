@@ -57,17 +57,6 @@ models.signals.post_save.connect(count_user_target, sender=Billboards)
 
 
 
-    # @staticmethod
-    # def get_or_create_current_month_target(user, default_target=10):
-    #     current_date = timezone.now()
-    #     month = current_date.month
-    #     year = current_date.year
-
-    #     monthly_target, created = MonthlyTarget.objects.get_or_create(
-    #         user=user, month=month, year=year,
-    #         defaults={'target': default_target}
-    #     )
-    #     return monthly_target
 
 
 
