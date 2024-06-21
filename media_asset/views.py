@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from . serializers import CreateBillboardSerializer, AssetSerializer, ZonesSerializer, DimensionsSerializer
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, DestroyAPIView
 from rest_framework import generics
 from rest_framework.generics import RetrieveUpdateAPIView, RetrieveAPIView, CreateAPIView
 from rest_framework.views import APIView
@@ -51,24 +51,6 @@ class CreateAssetAPIView(CreateAPIView):
         logger.warning(f"Validation failed: {serializer.errors}")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        
-# class CreateAssetAPIView(CreateAPIView):
-#     permission_classes = [IsAuthenticated]
-#     serializer_class = CreateBillboardSerializer
-
-#     def post(self, request, *args, **kwargs):
-#         serializer = CreateBillboardSerializer(data=request.data)
-#         user = request.user.id
-        
-#         if serializer.is_valid():
-#             serializer.save(user_id=user)
-
-#             add_media_task = Task.objects.get(user=user, title="Add a Media Asset")
-#             add_media_task.is_completed = True
-#             add_media_task.save()
-
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class AssetRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     queryset = Billboards.objects.all()
@@ -91,7 +73,36 @@ class AssetListAPIView(ListAPIView):
         user = self.request.user
         return Billboards.objects.filter(user=user)
 
+class AssetDeleteAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = AssetSerializer
 
+    def delete(self, request, pk, *args, **kwargs):
+        try:
+            # Retrieve the object using the primary key (pk)
+            asset = Billboards.objects.get(pk=pk)
+            asset_name = asset.asset_name 
+            asset.delete()
+
+            # Return a custom response with a success message
+            return Response(
+                {"message": f"'{asset_name}' has been successfully deleted."},
+                status=status.HTTP_200_OK
+            )
+        except Billboards.DoesNotExist:
+            # If the asset is not found, return a not found response
+            return Response(
+                {"error": "Billboard not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            # Handle any other exceptions that may occur
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+            
 @extend_schema(
     description="The endpoint is use to filter media assets by (asset type, zone, status and vacancy).",
     summary='Media Search(Filter) endpoint'
