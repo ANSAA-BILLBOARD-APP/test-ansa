@@ -4,6 +4,8 @@ from django.utils import timezone
 from authentication.models import AnsaaUser
 from datetime import datetime
 from media_asset.models import Billboards
+from django.dispatch import receiver
+from django.db.models.signals import post_save, post_delete
 
 
 class Month(models.IntegerChoices):
@@ -54,4 +56,25 @@ def count_user_target(sender, instance, created, **kwargs):
         target_obj.save()
 
 # Connect signal to create default task
+models.signals.post_save.connect(count_user_target, sender=Billboards)
+
+@receiver(post_delete, sender=Billboards)
+def decrement_target_count(sender, instance, **kwargs):
+    """
+    Decrements the target_count of the user's current month's target 
+    when a billboard is deleted.
+    """
+    current_date = timezone.now()
+    month = current_date.month
+    year = current_date.year
+
+    try:
+        target_obj = Target.objects.get(user=instance.user, month=month, year=year)
+        if target_obj.target_count > 0:
+            target_obj.target_count -= 1
+            target_obj.save()
+    except Target.DoesNotExist:
+        pass  # If no target object exists, nothing to decrement
+
+# Connect signals
 models.signals.post_save.connect(count_user_target, sender=Billboards)
