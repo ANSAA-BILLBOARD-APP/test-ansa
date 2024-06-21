@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'media_asset',
     'report',
     'todo',
-    'target',
+    'ansa_target',
     'django_crontab',
 ]
 

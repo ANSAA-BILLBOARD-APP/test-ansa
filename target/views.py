@@ -1,28 +1,39 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from datetime import datetime
-from .serializers import MonthlyTargetSerializer
-from .models import MonthlyTarget
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from . models import MonthlyTarget
+from .serializers import MonthlyTargetSerializer, WeeklyUploadSerializer
+from media_asset.models import Billboards
+from django.utils import timezone
+from datetime import timedelta
 
+class MonthlyTarget(APIView):
+    # serializer_class = MonthlyTargetSerializer
+    permission_classes = [IsAuthenticated]
 
-class UserBillboardStats(APIView):
-    serializer_class = MonthlyTargetSerializer
-
-    def get(self, request):
-        user = request.user  # Assuming user is authenticated
-        current_date = datetime.now()
-        year = current_date.year
+    def get(self, request, format=None):
+        user = request.user
+        current_date = timezone.now()
         month = current_date.month
+        year = current_date.year
 
-        # Get the monthly upload count
-        monthly_count = Billboards.count_billboards_uploaded(user, year, month)
+        monthly_target, created = MonthlyTarget.objects.get_or_create(user=instance.user, year=year, month=month, defaults={'target': 50})
+        target_data = MonthlyTargetSerializer(monthly_target).data
 
-        # Get weekly counts
-        weekly_counts = Billboards.count_weekly_billboards_uploaded(user, year, month)
+        # Calculate start and end of the current week
+        start_of_week = current_date - timedelta(days=current_date.weekday())
+        end_of_week = start_of_week + timedelta(days=6)
+
+        # Get all uploads for the current week
+        weekly_uploads = Billboard.objects.filter(
+            user=user,
+            upload_date__range=[start_of_week, end_of_week]
+        )
+        weekly_upload_data = WeeklyUploadSerializer(weekly_uploads, many=True).data
 
         return Response({
-            'monthly_target': monthly_target.target,
-            'monthly_count': monthly_count,
-            'weekly_counts': weekly_counts
+            'current_month_target': target_data,
+            'weekly_uploads': weekly_upload_data
         })
