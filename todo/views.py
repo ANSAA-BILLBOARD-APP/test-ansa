@@ -11,9 +11,11 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.generics import RetrieveUpdateAPIView, RetrieveAPIView, CreateAPIView, ListAPIView, RetrieveUpdateAPIView
 from rest_framework import status
 from . serializers import DeviceDetailSerializer, TaskSerializer
-from . models import DeviceDetail
+from . models import DeviceDetail, Task
 import asyncio
 from drf_spectacular.utils import extend_schema
+import logging
+logger = logging.getLogger(__name__)
 
 
 
@@ -21,7 +23,7 @@ class DeviceCreateAPIView(CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = DeviceDetailSerializer
 
-    def post(self, request, format=None):
+    def post(self, request, *args, **kwargs):
         serializer = DeviceDetailSerializer(data=request.data)
         user = request.user
         if serializer.is_valid():
@@ -29,10 +31,15 @@ class DeviceCreateAPIView(CreateAPIView):
 
             try:
                 update_davice_task = Task.objects.get(user=user, title="Approve Device")
-                update_davice_task.is_completed = True
-                update_davice_task.save()
+
+                if not update_davice_task.is_completed:
+                    update_davice_task.is_completed = True
+                    update_davice_task.save()
+                else:
+                    logger.info(f"Task 'Approve Device' for user {user.fullname} is already completed.")
+
             except Task.DoesNotExist:
-                return Response({'message': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
+                logger.warning(f"Task 'Approve Device' not found for user {user}")
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

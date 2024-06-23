@@ -11,8 +11,7 @@ from .models import DeviceDetail, Task
 class DeviceDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = DeviceDetail
-        fields = ['device_name', 'device_id', 'os', 'created_at']
-        read_only_fields = ['created_at']
+        fields = ['device_name', 'device_id', 'os']
 
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:

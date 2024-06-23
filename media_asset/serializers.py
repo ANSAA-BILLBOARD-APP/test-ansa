@@ -50,6 +50,10 @@ class DimensionsSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'min_width', 'max_width', 'category', 'zone', 'price']
 
 class AssetSerializer(serializers.ModelSerializer):
+    sub_zone = serializers.SlugRelatedField(
+        queryset=Zones.objects.all(),
+        slug_field='name'
+    )
     
     class Meta:
         model = Billboards

@@ -14,7 +14,6 @@ from todo.models import Task
 from .models import Billboards, Zones, Dimensions
 from drf_spectacular.utils import extend_schema
 import logging
-
 logger = logging.getLogger(__name__)
 
 class CreateAssetAPIView(CreateAPIView):
