@@ -11,7 +11,7 @@ from .models import DeviceDetail, Task
 class DeviceDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = DeviceDetail
-        fields = ['device_name', 'device_id', 'os']
+        fields = ['device_name', 'device_id', 'os', 'id']
 
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
