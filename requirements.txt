@@ -22,3 +22,10 @@ whitenoise
 resend
 python-dotenv
 gunicorn
+opencv-python
+tensorflow
+numpy
+torch
+torchvision
+ultralytics
+pandas
