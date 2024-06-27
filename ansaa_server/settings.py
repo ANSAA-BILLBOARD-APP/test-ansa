@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'report',
     'todo',
     'ansa_target',
+    'detection',
     'django_crontab',
 ]
 
