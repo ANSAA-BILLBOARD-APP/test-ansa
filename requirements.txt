@@ -25,7 +25,6 @@ gunicorn
 opencv-python
 tensorflow
 numpy
-torch
-torchvision
+--no-cache-dir torchvision
 ultralytics
 pandas
