@@ -19,7 +19,7 @@ SECRET_KEY = 'django-insegergrfdgvq w 4r35y6745rab1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','https://ansaa.duckdns.org','*']
+ALLOWED_HOSTS = ['127.0.0.1','https://ansaa.duckdns.org','*','.onrender.com']
 
 
 # Application definition
