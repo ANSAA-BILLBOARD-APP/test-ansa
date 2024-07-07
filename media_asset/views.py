@@ -15,6 +15,11 @@ from .models import Billboards, Zones, Dimensions
 from drf_spectacular.utils import extend_schema
 import logging
 logger = logging.getLogger(__name__)
+from rest_framework.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import DatabaseError, IntegrityError
+
+
 
 class CreateAssetAPIView(CreateAPIView):
     permission_classes = [IsAuthenticated]
@@ -25,27 +30,25 @@ class CreateAssetAPIView(CreateAPIView):
         user = request.user.id
 
         if serializer.is_valid():
+            serializer.save(user_id=user)
+                
+
+            # Check the task status and update if necessary
             try:
-                # Save the new asset with the current user
-                serializer.save(user_id=user)
+                tasks = Task.objects.get(user=user, title="Add a Media Asset")
 
-                # Check the task status and update if necessary
-                try:
-                    add_media_task = Task.objects.get(user=user, title="Add a Media Asset")
+                if tasks.exists():
+                    task = tasks.first()  # Or handle multiple tasks as needed
+                    if not task.is_completed:
+                        task.is_completed = True
+                        task.save()
+                else:
+                    logger.info(f"Task 'Add a Media Asset' for user {user} is already completed.")
 
-                    if not add_media_task.is_completed:
-                        add_media_task.is_completed = True
-                        add_media_task.save()
-                    else:
-                        logger.info(f"Task 'Add a Media Asset' for user {user} is already completed.")
+            except ObjectDoesNotExist:
+                logger.warning(f"Task 'Add a Media Asset' not found for user {user}")
 
-                except ObjectDoesNotExist:
-                    logger.warning(f"Task 'Add a Media Asset' not found for user {user}")
-
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            except Exception as e:
-                logger.error(f"Unexpected error occurred: {e}")
-                return Response({'error': 'An unexpected error occurred.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         logger.warning(f"Validation failed: {serializer.errors}")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
