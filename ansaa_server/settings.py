@@ -19,7 +19,7 @@ SECRET_KEY = 'django-insegergrfdgvq w 4r35y6745rab1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','.onrender.com','*']
+ALLOWED_HOSTS = ['127.0.0.1','.onrender.com','*','https://ansaa.duckdns.org']
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_METHODS = [
@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'report',
     'todo',
     'ansa_target',
+    'detection',
     'django_crontab',
 ]
 
