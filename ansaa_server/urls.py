@@ -17,6 +17,7 @@ urlpatterns = [
     path('report/', include('report.urls')),
     path('media-asset/', include("media_asset.urls")),
     path('targets/', include("ansa_target.urls")),
+    # path('detection/', include("detection.urls")),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
