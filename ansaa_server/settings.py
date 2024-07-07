@@ -20,7 +20,16 @@ SECRET_KEY = 'django-insegergrfdgvq w 4r35y6745rab1'
 DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1','.onrender.com','*']
+CORS_ALLOW_CREDENTIALS = True
 
+CORS_ALLOW_METHODS = [
+    'GET',
+    'POST',
+    'PUT',
+    'PATCH',
+    'DELETE',
+    'OPTIONS',
+]
 
 # Application definition
 
@@ -59,6 +68,7 @@ CRONJOBS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
