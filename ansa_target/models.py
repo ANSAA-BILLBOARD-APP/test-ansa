@@ -43,20 +43,23 @@ def count_user_target(sender, instance, created, **kwargs):
     """
     Updates the target_count of the user's current month's target upon billboard creation.
     """
-    if created:  # Only increment if a new billboard is created
-        year = datetime.now().year
-        month = datetime.now().month
+    year = datetime.now().year
+    month = datetime.now().month
+    target_obj, created = Target.objects.get_or_create(
+        user=instance.user, 
+        year=year, 
+        month=month,
+        defaults={'target': 50}
+    )
 
-        target_obj, created = Target.objects.get_or_create(
-            user=instance.user, 
-            year=year, 
-            month=month,
-            defaults={'target': 50}
-        )
+    if created:  # Only increment if a new billboard is created
+        target_obj.target_count += 1
+        target_obj.save()
+
         
-        if not created:  # Increment the count if the target already existed
-            target_obj.target_count += 1
-            target_obj.save()
+    if not created:  # Increment the count if the target already existed
+        target_obj.target_count += 1
+        target_obj.save()
 
 # Connect signal to create or update target count
 models.signals.post_save.connect(count_user_target, sender=Billboards)

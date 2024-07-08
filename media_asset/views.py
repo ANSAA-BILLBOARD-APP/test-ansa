@@ -35,7 +35,7 @@ class CreateAssetAPIView(CreateAPIView):
 
             # Check the task status and update if necessary
             try:
-                tasks = Task.objects.get(user=user, title="Add a Media Asset")
+                tasks = Task.objects.filter(user=user, title="Add a Media Asset")
 
                 if tasks.exists():
                     task = tasks.first()  # Or handle multiple tasks as needed

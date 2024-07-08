@@ -119,9 +119,6 @@ class Billboards(models.Model):
         verbose_name = _('Billboard')
         verbose_name_plural = _('Billboards')
 
-        constraints = [
-            models.UniqueConstraint(fields=['user', 'title'], name='unique_user_title_task')
-        ]
 
     def __str__(self):
         return self.asset_name
