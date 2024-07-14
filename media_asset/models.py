@@ -88,6 +88,7 @@ class Billboards(models.Model):
     vacancy = models.CharField(max_length=20, choices=VACANCY_CHOICES, default='vacant', blank=True)
 
     dimension = models.CharField(max_length=50, blank=True)
+    actual_dimension = models.CharField(max_length=50, blank=True)
     price = models.DecimalField(max_digits=30, decimal_places=2, blank=True, null=True)
     main_image = models.URLField(max_length=200, blank=True, null=True)
     image_1 = models.URLField(max_length=200, blank=True, null=True)

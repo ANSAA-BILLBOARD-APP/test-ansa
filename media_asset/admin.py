@@ -7,7 +7,7 @@ from django.db import models
 
 
 class BillboardsAdmin(admin.ModelAdmin):
-    search_fields = ('user','company','city','dimension','asset_name')
+    search_fields = ('user','company','city','dimension', 'actual_dimension', 'asset_name')
     list_filter = ('company', 'status','vacancy','city')
     ordering = ('-vacancy',)
     list_display = ('user','asset_name','company','price')
