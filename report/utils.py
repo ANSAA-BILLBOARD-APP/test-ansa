@@ -48,6 +48,7 @@ def generate_csv_report(user, time_filter=None, vacancy=None):
             billboard.get_status_display(),
             billboard.get_vacancy_display(),
             billboard.dimension,
+            billboard.actual_dimension,
             billboard.price,
             billboard.user,
             billboard.date,
