@@ -1,0 +1,37 @@
+#header {
+  height: 50px;
+  background: #3E4095;
+  color: #fff;
+  padding: 20px 0px;
+}
+#changelist tbody tr:has(.action-select:checked) {
+  background-color: #3e3f95a1;
+}
+#branding h1 {
+  color: #fff;
+}
+
+a:link,
+a:visited {
+  color:#e3e7ee;
+}
+
+div.breadcrumbs {
+  background: #FAB440;
+  color: #fff;
+}
+
+div.breadcrumbs a {
+  color: #333;
+}
+.current-model{
+  background-color: #FAB440;;
+}
+.module h2, .module caption, .inline-group h2 {
+  background: #3E4095;
+}
+
+.button, input[type=submit], input[type=button], .submit-row input, a.button {
+  background: #10284e;
+  color: #fff;
+}
