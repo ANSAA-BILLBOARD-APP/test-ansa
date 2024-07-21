@@ -152,7 +152,7 @@ def process_images(request):
             # Get detection results for the book
             book_detections = []
             for box, cls, score in zip(results.boxes.xyxy.cpu().numpy(), results.boxes.cls.cpu().numpy().astype(int), results.boxes.conf.cpu().numpy()):
-                if cls == BOOK_CLASS_ID and score > 0.3:  # Adjust the threshold if needed
+                if cls == BOOK_CLASS_ID and score > 0.5:  # Increased threshold for better accuracy
                     book_detections.append((box, cls, score))
 
             # Print all detected class IDs
@@ -166,6 +166,10 @@ def process_images(request):
 
             book_box = book_detections[0][0]
             scale = calculate_scale_factor(book_box, book_width, book_height, book_image_np, book_unit)
+
+            # Validate the scale factor to avoid unrealistically large/small values
+            if scale <= 0 or scale > 1000:
+                return JsonResponse({'error': 'Unreasonable scale factor detected'}, status=400)
 
             # Process the billboard image
             results = billboard_model(billboard_image_full_path)
@@ -185,14 +189,14 @@ def process_images(request):
                 if isinstance(detection, dict):  # YOLOv5 handling
                     cls = int(detection['class'])
                     score = detection['confidence']
-                    if cls == BILLBOARD_CLASS_ID and score > 0.3:  # Adjust the threshold if needed
+                    if cls == BILLBOARD_CLASS_ID and score > 0.5:  # Increased threshold for better accuracy
                         box = [detection['xmin'], detection['ymin'], detection['xmax'], detection['ymax']]
                         billboard_detections.append((box, cls, score))
                 else:  # YOLOv8 handling
                     box = detection[:4]
                     cls = int(detection[5])
                     score = detection[4]
-                    if cls == BILLBOARD_CLASS_ID and score > 0.3:
+                    if cls == BILLBOARD_CLASS_ID and score > 0.5:
                         billboard_detections.append((box, cls, score))
 
             if not billboard_detections:
@@ -201,113 +205,29 @@ def process_images(request):
                 return JsonResponse({'error': 'Billboard not detected'}, status=400)
 
             billboard_box = billboard_detections[0][0]
-            (startY, startX, endY, endX) = billboard_box
+            (startX, startY, endX, endY) = billboard_box
             (h, w) = billboard_image_np.shape[:2]
             (startX, startY, endX, endY) = (startX * w, startY * h, endX * w, endY * h)
 
-            width_pixels = endX - startX
-            height_pixels = endY - startY
+            billboard_width_pixels = endX - startX
+            billboard_height_pixels = endY - startY
 
-            width_real = width_pixels * scale
-            height_real = height_pixels * scale
+            billboard_width_mm = billboard_width_pixels * scale
+            billboard_height_mm = billboard_height_pixels * scale
+
+            result_data = {
+                'width': round(billboard_width_mm, 2),
+                'height': round(billboard_height_mm, 2),
+                'x': round(startX, 2),
+                'y': round(startY, 2)
+            }
 
             os.remove(book_image_full_path)
             os.remove(billboard_image_full_path)
 
-            return JsonResponse({'width': width_real, 'height': height_real, 'x': startX, 'y': startY}, status=200)
-
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-        finally:
-            if os.path.exists(book_image_full_path):
-                os.remove(book_image_full_path)
-            if os.path.exists(billboard_image_full_path):
-                os.remove(billboard_image_full_path)
-
-    return JsonResponse({'error': 'Invalid request'}, status=400)
-
-@extend_schema(
-    description="The endpoint is used to detect and validate reference images (image should contain a book).",
-    summary='Validate Reference (Book) endpoint',
-    request={
-        'application/json': {
-            'type': 'object',
-            'properties': {
-                'file': {'type': 'string', 'format': 'base64', 'description': 'Upload book image'},
-            },
-            'required': ['file']
-        }
-    },
-    responses={
-        200: OpenApiResponse(
-            description="JSON response containing billboard dimension and position information",
-            examples={
-                "application/json": {
-                    "message": "File uploaded successfully.",
-                    "data": {
-                        "message": 'string',
-                        "is_valid": True
-                    }
-                }
-            },
-        )
-    }
-)
-@api_view(['POST'])
-@parser_classes([JSONParser])
-def detect_book_in_image(request):
-    if request.method == 'POST':
-        book_image_base64 = request.data.get('file')
-        
-        if not book_image_base64:
-            return JsonResponse({'error': 'No image provided'}, status=400)
-
-        book_image_path = save_base64_image(book_image_base64, 'book.jpg')
-        
-        if not book_image_path:
-            return JsonResponse({'error': 'Failed to save image'}, status=500)
-        
-        book_image_full_path = os.path.join(default_storage.location, book_image_path)
-
-        # Check if the image is saved correctly
-        if not os.path.exists(book_image_full_path):
-            return JsonResponse({'error': 'Image not saved correctly'}, status=500)
-
-        # Check if the image is readable by OpenCV
-        image = cv2.imread(book_image_full_path)
-        if image is None:
-            return JsonResponse({'error': 'Image not readable'}, status=500)
-
-        try:
-            # Process the book image to find the reference object
-            results = book_model(book_image_full_path)
-
-            # Debugging: Print all detection results
-            print(f"Results object for book image: {results}")
-
-            # YOLOv8 specific handling
-            if isinstance(results, list):
-                results = results[0]  # Assume single image
-
-            # Get detection results for the book
-            book_detections = []
-            for box, cls, score in zip(results.boxes.xyxy.cpu().numpy(), results.boxes.cls.cpu().numpy().astype(int), results.boxes.conf.cpu().numpy()):
-                if cls == BOOK_CLASS_ID and score > 0.3:  # Adjust the threshold if needed
-                    book_detections.append((box, cls, score))
-
-            # Print all detected class IDs
-            for box, cls, score in zip(results.boxes.xyxy.cpu().numpy(), results.boxes.cls.cpu().numpy().astype(int), results.boxes.conf.cpu().numpy()):
-                print(f"Detected class ID: {cls}, Score: {score}")
-
-            os.remove(book_image_full_path)
-
-            if not book_detections:
-                return JsonResponse({'message': 'Book not detected', 'is_valid': False}, status=200)
-
-            return JsonResponse({'message': 'Book detected', 'is_valid': True}, status=200)
+            return JsonResponse({'message': 'File uploaded successfully.', 'data': result_data})
 
         except Exception as e:
             os.remove(book_image_full_path)
+            os.remove(billboard_image_full_path)
             return JsonResponse({'error': str(e)}, status=500)
-
-    return JsonResponse({'error': 'Invalid request'}, status=400)
