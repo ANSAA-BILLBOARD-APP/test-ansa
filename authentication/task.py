@@ -58,10 +58,12 @@ def send_otp_email(email, otp_code):
 def send_otp_sms(phone_number, otp_code):
     account_sid = settings.ACCOUNT_SID
     auth_token = settings.ACCOUNT_TOKEN
+    message_sid = settings.MESSAGING_SERVICE_SID
     client = Client(account_sid, auth_token)
     verification_check = client.verify
     message = client.messages.create(
-                            from_= settings.TWILIO_PHONE_NUMBER,
+                            messaging_service_sid = message_sid,
+                            # from_= settings.TWILIO_PHONE_NUMBER,
                             body= f"Your [ANSAA] verification code is: {otp_code}. Don't share this code with anyone; Ansaa will never ask for the code.",
                             to=phone_number
                         )
