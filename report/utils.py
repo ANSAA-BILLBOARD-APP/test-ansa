@@ -51,7 +51,7 @@ def generate_csv_report(user, time_filter=None, vacancy=None):
             billboard.actual_dimension,
             billboard.price,
             billboard.user,
-            billboard.qr_code,
+            f"https://dotsassets.com/{billboard.qr_code}",
             billboard.date,
         ])
     
