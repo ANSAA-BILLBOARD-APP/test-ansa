@@ -4,7 +4,9 @@ from phonenumber_field.modelfields import PhoneNumberField
 from django.utils.translation import gettext_lazy as _
 import uuid
 from django.utils import timezone
-
+import qrcode
+from io import BytesIO
+from django.core.files.base import ContentFile
 
 class Zones(models.Model):
     name = models.CharField(max_length=150)
@@ -107,12 +109,45 @@ class Billboards(models.Model):
     longitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, blank=True, null=True)
     date = models.DateTimeField(default=timezone.now)
+    qr_code = models.ImageField(upload_to='qr_codes/', blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if not self.asset_name:  # Generate asset_name ID only if not already set
             asset_name_prefix = 'BOARD '
             asset_name_suffix = uuid.uuid4().hex[:3]
             self.asset_name = f'{asset_name_prefix}{asset_name_suffix}'.upper()
+
+
+        # Generate QR code
+        qr_data = f'Asset Name: {self.asset_name}\n' \
+                  f'Category: {self.category}\n' \
+                  f'Zone: {self.zone}\n' \
+                  f'Company: {self.company}\n' \
+                  f'Price: {self.price}\n' \
+                  f'City: {self.city}\n' \
+                  f'Address: {self.address}\n' \
+                  f'Sub Zone: {self.sub_zone}\n' \
+                  f'Asset Type: {self.asset_type}\n' \
+                  f'Address: {self.address}\n' \
+                  f'Dimension: {self.dimension}\n' \
+                  f'Actual Dimension: {self.actual_dimension}'
+        
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(qr_data)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+
+        buffer = BytesIO()
+        img.save(buffer, format="PNG")
+        buffer.seek(0)
+        file_name = f'{self.asset_name}_qr.png'
+        self.qr_code.save(file_name, ContentFile(buffer.getvalue()), save=False)
+
         super().save(*args, **kwargs)
 
     class Meta:
