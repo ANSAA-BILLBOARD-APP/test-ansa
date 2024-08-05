@@ -211,9 +211,13 @@ def process_images(request):
             billboard_width_mm = billboard_width_pixels * scale
             billboard_height_mm = billboard_height_pixels * scale
 
+            # Convert dimensions from square millimeters to square meters
+            billboard_width_m = billboard_width_mm / 1000
+            billboard_height_m = billboard_height_mm / 1000
+
             result_data = {
-                'width': round(billboard_width_mm, 2),
-                'height': round(billboard_height_mm, 2),
+                'width': round(billboard_width_m, 2),
+                'height': round(billboard_height_m, 2),
                 'x': round(startX, 2),
                 'y': round(startY, 2)
             }
@@ -221,10 +225,7 @@ def process_images(request):
             os.remove(book_image_full_path)
             os.remove(billboard_image_full_path)
 
-            return JsonResponse({'width': round(billboard_width_mm, 2),
-                'height': round(billboard_height_mm, 2),
-                'x': round(startX, 2),
-                'y': round(startY, 2)})
+            return JsonResponse(result_data)
 
         except Exception as e:
             os.remove(book_image_full_path)
@@ -299,12 +300,12 @@ def detect_book_in_image(request):
 
             # YOLOv8 specific handling
             if isinstance(results, list):
-                results = results[0]  # Assume single image
+                results = results[0] # Assume single image
 
             # Get detection results for the book
             book_detections = []
             for box, cls, score in zip(results.boxes.xyxy.cpu().numpy(), results.boxes.cls.cpu().numpy().astype(int), results.boxes.conf.cpu().numpy()):
-                if cls == BOOK_CLASS_ID and score > 0.3:  # Adjust the threshold if needed
+                if cls == BOOK_CLASS_ID and score > 0.5:  # Adjust the threshold if needed
                     book_detections.append((box, cls, score))
 
             # Print all detected class IDs
