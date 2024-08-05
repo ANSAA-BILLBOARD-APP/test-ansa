@@ -36,7 +36,7 @@ def generate_csv_report(user, time_filter=None, vacancy=None):
     
     output = StringIO()
     writer = csv.writer(output)
-    writer.writerow(['Asset Name', 'Asset Type', 'Category', 'Zone', 'Sub Zone', 'Status', 'Vacancy', 'Dimension', 'actual_dimension', 'Price', 'User', 'Date'])
+    writer.writerow(['Asset Name', 'Asset Type', 'Category', 'Zone', 'Sub Zone', 'Status', 'Vacancy', 'Dimension', 'actual_dimension', 'Price', 'User', 'qr_code', 'Date'])
     
     for billboard in billboards:
         writer.writerow([
@@ -51,6 +51,7 @@ def generate_csv_report(user, time_filter=None, vacancy=None):
             billboard.actual_dimension,
             billboard.price,
             billboard.user,
+            billboard.qr_code,
             billboard.date,
         ])
     
