@@ -5,9 +5,6 @@ import base64
 from django.http import JsonResponse
 from rest_framework.decorators import api_view, parser_classes
 from rest_framework.parsers import JSONParser
-from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
-import os
 from ultralytics import YOLO
 from rest_framework import status
 from drf_spectacular.utils import extend_schema, OpenApiResponse
@@ -31,8 +28,16 @@ book_model = YOLO(default_book_model_path)  # Adjust path to your local model
 # Load the custom YOLOv5 model for billboards
 billboard_model = torch.hub.load('ultralytics/yolov5', 'custom', path=custom_model_path)
 
-def load_image_into_numpy_array(path):
-    return np.array(cv2.imread(path))
+
+def load_image_into_numpy_array(base64_string):
+    # Decode the base64 string
+    image_data = base64.b64decode(base64_string)
+    # Convert the image data to a numpy array
+    nparr = np.frombuffer(image_data, np.uint8)
+    # Decode the numpy array into an image
+    image_np = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    return image_np
+
 
 def calculate_scale_factor(book_box, known_width, known_height, image_np, unit='mm'):
     if unit == 'cm':
@@ -54,25 +59,6 @@ def calculate_scale_factor(book_box, known_width, known_height, image_np, unit='
 
     return scale
 
-def save_base64_image(base64_string, filename):
-    try:
-        # Split the base64 string to remove metadata
-        if "base64," in base64_string:
-            base64_string = base64_string.split("base64,")[1]
-
-        # Decode the base64 string
-        image_data = base64.b64decode(base64_string)
-        
-        # Create a ContentFile from the decoded data
-        image_file = ContentFile(image_data, name=filename)
-        
-        # Save the file to default storage
-        saved_path = default_storage.save(filename, image_file)
-        
-        return saved_path
-    except Exception as e:
-        print(f"Error saving base64 image: {e}")
-        return None
 
 @extend_schema(
     description="The endpoint is used to detect and measure billboards and return dimensions.",
@@ -120,75 +106,47 @@ def process_images(request):
         if not book_image_base64 or not billboard_image_base64:
             return JsonResponse({'error': 'Images not provided'}, status=400)
 
-        book_image_path = save_base64_image(book_image_base64, 'book.jpg')
-        billboard_image_path = save_base64_image(billboard_image_base64, 'billboard.jpg')
-
-        if not book_image_path or not billboard_image_path:
-            return JsonResponse({'error': 'Failed to save images'}, status=500)
-
-        book_image_full_path = os.path.join(default_storage.location, book_image_path)
-        billboard_image_full_path = os.path.join(default_storage.location, billboard_image_path)
-
-        # Check if the images are readable by OpenCV
-        book_image_np = cv2.imread(book_image_full_path)
-        billboard_image_np = cv2.imread(billboard_image_full_path)
-
-        if book_image_np is None:
-            return JsonResponse({'error': 'Book image not readable'}, status=500)
-        if billboard_image_np is None:
-            return JsonResponse({'error': 'Billboard image not readable'}, status=500)
-
         try:
+            book_image_np = load_image_into_numpy_array(book_image_base64)
+            billboard_image_np = load_image_into_numpy_array(billboard_image_base64)
+
+            if book_image_np is None:
+                return JsonResponse({'error': 'Book image not readable'}, status=500)
+            if billboard_image_np is None:
+                return JsonResponse({'error': 'Billboard image not readable'}, status=500)
+
             # Process the book image to find the reference object
-            results = book_model(book_image_full_path)
+            book_results = book_model(book_image_np)
+            if isinstance(book_results, list):
+                book_results = book_results[0]
 
-            # Debugging: Print all detection results
-            print(f"Results object for book image: {results}")
-
-            # YOLOv8 specific handling
-            if isinstance(results, list):
-                results = results[0]  # Assume single image
-
-            # Get detection results for the book
             book_detections = []
-            for box, cls, score in zip(results.boxes.xyxy.cpu().numpy(), results.boxes.cls.cpu().numpy().astype(int), results.boxes.conf.cpu().numpy()):
-                if cls == BOOK_CLASS_ID and score > 0.5:  # Increased threshold for better accuracy
+            for box, cls, score in zip(book_results.boxes.xyxy.cpu().numpy(), book_results.boxes.cls.cpu().numpy().astype(int), book_results.boxes.conf.cpu().numpy()):
+                if cls == BOOK_CLASS_ID and score > 0.5:
                     book_detections.append((box, cls, score))
 
-            # Print all detected class IDs
-            for box, cls, score in zip(results.boxes.xyxy.cpu().numpy(), results.boxes.cls.cpu().numpy().astype(int), results.boxes.conf.cpu().numpy()):
-                print(f"Detected class ID: {cls}, Score: {score}")
-
             if not book_detections:
-                os.remove(book_image_full_path)
-                os.remove(billboard_image_full_path)
                 return JsonResponse({'error': 'Book not detected'}, status=400)
 
             book_box = book_detections[0][0]
             scale = calculate_scale_factor(book_box, book_width, book_height, book_image_np, book_unit)
 
             # Process the billboard image
-            results = billboard_model(billboard_image_full_path)
-
-            # Debugging: Print all detection results
-            print(f"Results object for billboard image: {results}")
-
-            # YOLOv5 specific handling
-            if isinstance(results, torch.Tensor):
-                results = results.pandas().xyxy[0].to_dict(orient="records")
+            billboard_results = billboard_model(billboard_image_np)
+            if isinstance(billboard_results, torch.Tensor):
+                billboard_results = billboard_results.pandas().xyxy[0].to_dict(orient="records")
             else:
-                results = results.xyxy[0].cpu().numpy()  # Get the results in a numpy array
+                billboard_results = billboard_results.xyxy[0].cpu().numpy()
 
-            # Get detection results for the billboard
             billboard_detections = []
-            for detection in results:
-                if isinstance(detection, dict):  # YOLOv5 handling
+            for detection in billboard_results:
+                if isinstance(detection, dict):
                     cls = int(detection['class'])
                     score = detection['confidence']
-                    if cls == BILLBOARD_CLASS_ID and score > 0.5:  # Increased threshold for better accuracy
+                    if cls == BILLBOARD_CLASS_ID and score > 0.5:
                         box = [detection['xmin'], detection['ymin'], detection['xmax'], detection['ymax']]
                         billboard_detections.append((box, cls, score))
-                else:  # YOLOv8 handling
+                else:
                     box = detection[:4]
                     cls = int(detection[5])
                     score = detection[4]
@@ -196,8 +154,6 @@ def process_images(request):
                         billboard_detections.append((box, cls, score))
 
             if not billboard_detections:
-                os.remove(book_image_full_path)
-                os.remove(billboard_image_full_path)
                 return JsonResponse({'error': 'Billboard not detected'}, status=400)
 
             billboard_box = billboard_detections[0][0]
@@ -222,20 +178,10 @@ def process_images(request):
                 'y': round(startY, 2)
             }
 
-            os.remove(book_image_full_path)
-            os.remove(billboard_image_full_path)
-
             return JsonResponse(result_data)
 
         except Exception as e:
-            os.remove(book_image_full_path)
-            os.remove(billboard_image_full_path)
             return JsonResponse({'error': str(e)}, status=500)
-        finally:
-            if os.path.exists(book_image_full_path):
-                os.remove(book_image_full_path)
-            if os.path.exists(billboard_image_full_path):
-                os.remove(billboard_image_full_path)
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
@@ -275,44 +221,21 @@ def detect_book_in_image(request):
         if not book_image_base64:
             return JsonResponse({'error': 'No image provided'}, status=400)
 
-        book_image_path = save_base64_image(book_image_base64, 'book.jpg')
-        
-        if not book_image_path:
-            return JsonResponse({'error': 'Failed to save image'}, status=500)
-        
-        book_image_full_path = os.path.join(default_storage.location, book_image_path)
-
-        # Check if the image is saved correctly
-        if not os.path.exists(book_image_full_path):
-            return JsonResponse({'error': 'Image not saved correctly'}, status=500)
-
-        # Check if the image is readable by OpenCV
-        image = cv2.imread(book_image_full_path)
-        if image is None:
-            return JsonResponse({'error': 'Image not readable'}, status=500)
-
         try:
+            book_image_np = load_image_into_numpy_array(book_image_base64)
+            
+            if book_image_np is None:
+                return JsonResponse({'error': 'Image not readable'}, status=500)
+
             # Process the book image to find the reference object
-            results = book_model(book_image_full_path)
+            book_results = book_model(book_image_np)
+            if isinstance(book_results, list):
+                book_results = book_results[0]
 
-            # Debugging: Print all detection results
-            print(f"Results object for book image: {results}")
-
-            # YOLOv8 specific handling
-            if isinstance(results, list):
-                results = results[0] # Assume single image
-
-            # Get detection results for the book
             book_detections = []
-            for box, cls, score in zip(results.boxes.xyxy.cpu().numpy(), results.boxes.cls.cpu().numpy().astype(int), results.boxes.conf.cpu().numpy()):
-                if cls == BOOK_CLASS_ID and score > 0.5:  # Adjust the threshold if needed
+            for box, cls, score in zip(book_results.boxes.xyxy.cpu().numpy(), book_results.boxes.cls.cpu().numpy().astype(int), book_results.boxes.conf.cpu().numpy()):
+                if cls == BOOK_CLASS_ID and score > 0.5:
                     book_detections.append((box, cls, score))
-
-            # Print all detected class IDs
-            for box, cls, score in zip(results.boxes.xyxy.cpu().numpy(), results.boxes.cls.cpu().numpy().astype(int), results.boxes.conf.cpu().numpy()):
-                print(f"Detected class ID: {cls}, Score: {score}")
-
-            os.remove(book_image_full_path)
 
             if not book_detections:
                 return JsonResponse({'message': 'Book not detected', 'is_valid': False}, status=200)
@@ -320,7 +243,6 @@ def detect_book_in_image(request):
             return JsonResponse({'message': 'Book detected', 'is_valid': True}, status=200)
 
         except Exception as e:
-            os.remove(book_image_full_path)
             return JsonResponse({'error': str(e)}, status=500)
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
