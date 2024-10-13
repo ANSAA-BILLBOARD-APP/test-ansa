@@ -1,0 +1,13 @@
+{% extends "admin/change_form.html" %}
+
+{% block submit_buttons_bottom %}
+    <div class="submit-row">
+        {{ block.super }}  <!-- Include the default save/delete buttons -->
+        
+        {% if show_send_password_button %}
+            <a href="{{ send_password_url }}" class="button" style="margin-left: 10px; margin-top:10px; background-color: #5cb85c; color: white; padding: 10px; height:20px; font-weight: 400; border-radius: 4px; text-align: center; display: inline-flex; align-items: center;">
+                Reset Password
+            </a>
+        {% endif %}
+    </div>
+{% endblock %}
