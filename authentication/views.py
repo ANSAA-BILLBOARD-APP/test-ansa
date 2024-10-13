@@ -18,7 +18,13 @@ from todo.models import Task
 from drf_spectacular.utils import extend_schema
 
 
-
+@extend_schema(
+    request=LogoutSerializer,
+    responses={status.HTTP_200_OK: LogoutSerializer},
+    description='The endpoint is use to logout user by blacklisting their tokens',
+    tags=["Authentication"],
+    summary='User logout',
+)
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = LogoutSerializer
@@ -41,7 +47,13 @@ class LogoutView(APIView):
             return Response({'error': 'Refresh token not provided'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-
+@extend_schema(
+    request=ProfileSerializer,
+    responses={status.HTTP_200_OK: ProfileSerializer},
+    description='User profile endpoint, to get user details and also update user details',
+    tags=["Authentication"],
+    summary='User Profile',
+)
 class UserProfileViews(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ProfileSerializer
@@ -81,7 +93,13 @@ class UserProfileViews(APIView):
         return Response(serializer.data)
 
 
-
+@extend_schema(
+    request=LoginSerializer,
+    responses={status.HTTP_200_OK: LoginSerializer},
+    description='The users "phone number" or "email" is required for authentication on this login endpoint.',
+    tags=["Authentication"],
+    summary='User Login',
+)
 class LoginAPIView(APIView):
     serializer_class = LoginSerializer
 
