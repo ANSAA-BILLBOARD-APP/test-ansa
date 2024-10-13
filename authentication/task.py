@@ -7,9 +7,7 @@ from django.core.mail import send_mail
 from django.template import loader
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
-from twilio.http.async_http_client import AsyncTwilioHttpClient
-from twilio.rest import Client
-import resend
+
 
 
 class EmailThread(threading.Thread):
