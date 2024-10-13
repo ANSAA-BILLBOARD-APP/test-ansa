@@ -2,7 +2,7 @@ from django.shortcuts import render
 from . serializers import CreateBillboardSerializer, AssetSerializer, ZonesSerializer, DimensionsSerializer
 from rest_framework.generics import ListAPIView, DestroyAPIView
 from rest_framework import generics
-from rest_framework.generics import RetrieveUpdateAPIView, RetrieveAPIView, CreateAPIView
+from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.views import APIView
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -20,8 +20,14 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import DatabaseError, IntegrityError
 
 
-
-class CreateAssetAPIView(CreateAPIView):
+@extend_schema(
+    request=CreateBillboardSerializer,
+    responses={status.HTTP_201_CREATED: CreateBillboardSerializer},
+    description='Upload media asset to the database',
+    tags=["Media Assets"],
+    summary='Upload media asset',
+)
+class CreateAssetAPIView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = CreateBillboardSerializer
 
@@ -54,6 +60,11 @@ class CreateAssetAPIView(CreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@extend_schema(
+    request=AssetSerializer,
+    responses={status.HTTP_201_CREATED: AssetSerializer},
+    tags=["Media Assets"],
+)
 class AssetRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     queryset = Billboards.objects.all()
     serializer_class = AssetSerializer
@@ -67,7 +78,15 @@ class AssetRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         self.perform_update(serializer)
         return Response(serializer.data)
 
-class AssetListAPIView(ListAPIView):
+
+@extend_schema(
+    request=AssetSerializer,
+    responses={status.HTTP_200_OK: AssetSerializer},
+    description='List all uploaded media assets from database',
+    tags=["Media Assets"],
+    summary='List all uploaded media assets',
+)
+class AssetListAPIView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = AssetSerializer
 
@@ -75,6 +94,14 @@ class AssetListAPIView(ListAPIView):
         user = self.request.user
         return Billboards.objects.filter(user=user)
 
+
+@extend_schema(
+    request=AssetSerializer,
+    responses={status.HTTP_200_OK: AssetSerializer},
+    description='Delete media asset',
+    tags=["Media Assets"],
+    summary='Delete media asset from database',
+)
 class AssetDeleteAPIView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = AssetSerializer
@@ -107,7 +134,8 @@ class AssetDeleteAPIView(APIView):
             
 @extend_schema(
     description="The endpoint is use to filter media assets by (asset type, zone, status and vacancy).",
-    summary='Media Search(Filter) endpoint'
+    summary='Media Search(Filter) endpoint',
+    tags=["Media Assets"],
 )
 class AssetSearchAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -135,11 +163,23 @@ class AssetSearchAPIView(APIView):
         serializer = self.serializer_class(assets, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+@extend_schema(
+    description="List of Zone in Anambra",
+    summary='List all zone in Anambra',
+    tags=["Media Assets"],
+)
 class ZonesListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Zones.objects.all()
     serializer_class = ZonesSerializer
 
+
+@extend_schema(
+    description="Media assets dimension for determining assets price",
+    summary='List all Media Assets dimensions',
+    tags=["Media Assets"],
+)
 class DimensionsListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Dimensions.objects.all()
