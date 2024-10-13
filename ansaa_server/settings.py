@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     'report',
     'todo',
     'ansa_target',
-    'detection',
     'django_crontab',
 ]
 
@@ -61,9 +60,6 @@ SPECTACULAR_SETTINGS = {
     # OTHER SETTINGS
 }
 
-CRONJOBS = [
-    ('0 0 1 * *', 'django.core.management.call_command', ['monthly_targets']),
-]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
