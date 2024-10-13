@@ -9,7 +9,8 @@ from drf_spectacular.utils import extend_schema
 
 @extend_schema(
     description="The endpoint is use to download all user report with and without filter in csv format by date(week, month and year) and vacancy eg,    \n\n http://localhost:8000/report/download-report/?time_filter=week \n\n http://localhost:8000/report/download-report/?time_filter=month  \n\n http://localhost:8000/report/download-report/?time_filter=year \n\n http://localhost:8000/report/download-report/?vacancy=vacant \n\n http://localhost:8000/report/download-report/?vacancy=occupied \n\n http://localhost:8000/report/download-report/?time_filter=week&vacancy=vacant \n\n http://localhost:8000/report/download-report/?time_filter=month&vacancy=occupied",
-    summary='Media asset report download'
+    summary='Media asset report download',
+    tags = ["Report"],
 )
 class ReportDownloadView(APIView):
     permission_classes = [IsAuthenticated]
@@ -49,7 +50,8 @@ class ReportDownloadView(APIView):
 
 @extend_schema(
     description="The endpoint return sum total of upploaded user media assets by date(week, month and year) and vacancy eg,    \n\n http://localhost:8000/report/count-assets/?time_filter=week \n\n http://localhost:8000/report/count-assets/?time_filter=month  \n\n http://localhost:8000/report/count-assets/?time_filter=year \n\n http://localhost:8000/report/count-assets/?vacancy=vacant \n\n http://localhost:8000/report/count-assets/?vacancy=occupied \n\n http://localhost:8000/api/download-report/?time_filter=week&vacancy=vacant",
-    summary='Count uploaded media assets'
+    summary='Count uploaded media assets',
+    tags = ["Report"],
 )
 class CountReportView(APIView):
     permission_classes = [IsAuthenticated]
