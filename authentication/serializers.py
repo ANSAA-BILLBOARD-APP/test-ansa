@@ -6,32 +6,13 @@ from django.contrib.auth import authenticate
 from phonenumber_field.serializerfields import PhoneNumberField
 from .models import AnsaaUser, OTP
 
-
-class RequestOTPSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(required=False)
-    phone_number = PhoneNumberField(required=False)
-    
-    class Meta:
-        model = OTP
-        fields = ["email", "phone_number"]
-
-class OTPVerificationSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(required=False)
-    phone_number = PhoneNumberField(required=False)
-    otp = serializers.CharField(required=True)
-    
-    class Meta:
-        model = OTP
-        fields = ["email", "phone_number", "otp"]   
+ 
 
 
 class LoginSerializer(serializers.Serializer):
-    email = serializers.EmailField(required=False)
-    phone_number = PhoneNumberField(required=False)
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
 
-    class Meta:
-        model = AnsaaUser
-        fields= ['email','phone_number']
 
 class ProfileSerializer(serializers.ModelSerializer):
 
