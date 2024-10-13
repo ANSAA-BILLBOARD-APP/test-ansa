@@ -16,9 +16,17 @@ import asyncio
 from drf_spectacular.utils import extend_schema
 import logging
 logger = logging.getLogger(__name__)
+from drf_spectacular.utils import extend_schema
 
 
 
+@extend_schema(
+    request=DeviceDetailSerializer,
+    responses={status.HTTP_201_CREATED: DeviceDetailSerializer},
+    description='User device verificaion',
+    tags=["Todo"],
+    summary='Verify and save user device details',
+)
 class DeviceCreateAPIView(CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = DeviceDetailSerializer
@@ -45,6 +53,11 @@ class DeviceCreateAPIView(CreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@extend_schema(
+    request=DeviceDetailSerializer,
+    responses={status.HTTP_200_OK: DeviceDetailSerializer},
+    tags=["Todo"],
+)
 class DeviceListAPIView(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = DeviceDetailSerializer
@@ -55,6 +68,13 @@ class DeviceListAPIView(ListAPIView):
         serializer = DeviceDetailSerializer(devices, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+
+@extend_schema(
+    request=TaskSerializer,
+    responses={status.HTTP_200_OK: TaskSerializer},
+    tags=["Todo"],
+)
 class DeviceUpdateAPIView(RetrieveUpdateAPIView):
     queryset = DeviceDetail.objects.all()
     serializer_class = DeviceDetailSerializer
@@ -68,6 +88,14 @@ class DeviceUpdateAPIView(RetrieveUpdateAPIView):
         self.perform_update(serializer)
         return Response(serializer.data)
 
+
+@extend_schema(
+    request=TaskSerializer,
+    responses={status.HTTP_200_OK: TaskSerializer},
+    description='List all user task',
+    tags=["Todo"],
+    summary='List all available task/todos',
+)
 class TaskAPIView(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = TaskSerializer
