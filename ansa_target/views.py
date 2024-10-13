@@ -8,7 +8,15 @@ from .serializers import TargetSerializer, WeeklyUploadSerializer
 from media_asset.models import Billboards
 from django.utils import timezone
 from datetime import timedelta
+from drf_spectacular.utils import extend_schema
 
+@extend_schema(
+    request=TargetSerializer,
+    responses={status.HTTP_200_OK: TargetSerializer},
+    description='Get user target(monthly and weekly)',
+    tags=["Target/Satistics"],
+    summary='Get user target',
+)
 class MonthlyTarget(APIView):
     serializer_class = TargetSerializer
     permission_classes = [IsAuthenticated]
