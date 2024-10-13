@@ -10,9 +10,8 @@ from rest_framework.views import APIView
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.generics import RetrieveUpdateAPIView, RetrieveAPIView
 from rest_framework import status
-from . serializers import LogoutSerializer, ProfileSerializer, LoginSerializer
+from . serializers import LogoutSerializer, ProfileSerializer, LoginSerializer, PasswordResetRequestSerializer
 from . models import AnsaaUser, OTP
 from todo.models import Task
 from drf_spectacular.utils import extend_schema
@@ -137,3 +136,28 @@ class LoginAPIView(APIView):
 
         # Return serializer errors if validation fails
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class PasswordResetAPIView(APIView):
+    serializer_class = PasswordResetRequestSerializer
+    
+    def post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+        
+        if serializer.is_valid():
+            email = serializer.validated_data.get("email")
+            
+            try:
+                user = AnsaaUser.objects.get(email=email)
+                
+                # prepare user details
+                fullname = user.fullname
+                email = user.email
+                
+                # get admin users
+                admins = AnsaaUser.objects.filter(is_superuser=True, active=True)
+                
+                
+            except:
+                pass
+                
+                

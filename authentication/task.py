@@ -72,3 +72,20 @@ def password_reset(email, password, fullname):
     )
     email_message.content_subtype = 'html'
     EmailThread(email_message).start()
+    
+
+def password_reset_request(email, fullname):
+    # Send password reset request
+    email_subject = 'Password Reset Request Notification'
+    template = loader.get_template('change_password.txt')
+    parameters = {"name": fullname, "email":email}
+    email_content = template.render(parameters)
+
+    email_message = EmailMultiAlternatives(
+        email_subject,
+        email_content,
+        settings.EMAIL_HOST_USER,
+        [email]
+    )
+    email_message.content_subtype = 'html'
+    EmailThread(email_message).start()

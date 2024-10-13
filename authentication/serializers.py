@@ -1,12 +1,6 @@
 from rest_framework import serializers
-from rest_framework.validators import ValidationError
-from rest_framework.exceptions import AuthenticationFailed
-from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth import authenticate
-from phonenumber_field.serializerfields import PhoneNumberField
-from .models import AnsaaUser, OTP
+from .models import AnsaaUser
 
- 
 
 
 class LoginSerializer(serializers.Serializer):
@@ -14,6 +8,10 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
 
 
+class PasswordResetRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    
+    
 class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
