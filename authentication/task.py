@@ -21,53 +21,6 @@ class EmailThread(threading.Thread):
         self.email_message.send()
 
 
-def generate_otp():
-        # Generate a 4-digit OTP
-        otp = ''.join(random.choices(string.digits, k=4))
-        return otp
-
-def send_otp_email(email, otp_code):
-    # Send OTP email
-    email_subject = '[Ansaa OTP] Verification Code'
-    template = loader.get_template('mail_template.txt')
-    parameters = {'otp': otp_code}
-    email_content = template.render(parameters)
-    # resend.api_key = "re_AjPbuZTK_HaLzRfA1gf9o9BDiawZ74fJZ"
-
-    # params: resend.Emails.SendParams = {
-    #     "from": "Ansa <onboarding@resend.dev>",
-    #     "subject": email_subject,
-    #     "html": email_content,
-    #     "to": [email],
-    # }
-
-    # email = resend.Emails.send(params)
-    # print(email)
-    email_message = EmailMultiAlternatives(
-        email_subject,
-        email_content,
-        settings.EMAIL_HOST_USER,
-        [email]
-    )
-    email_message.content_subtype = 'html'
-    EmailThread(email_message).start()
-
-    
-def send_otp_sms(phone_number, otp_code):
-    account_sid = settings.ACCOUNT_SID
-    auth_token = settings.ACCOUNT_TOKEN
-    message_sid = settings.MESSAGING_SERVICE_SID
-    client = Client(account_sid, auth_token)
-    verification_check = client.verify
-    message = client.messages.create(
-                            messaging_service_sid = message_sid,
-                            # from_= settings.TWILIO_PHONE_NUMBER,
-                            body= f"Your [ANSAA] verification code is: {otp_code}. Don't share this code with anyone; Ansaa will never ask for the code.",
-                            to=phone_number
-                        )
-
-    print(message.sid)
-
 
 
     
