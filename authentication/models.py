@@ -6,6 +6,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 from phonenumber_field.modelfields import PhoneNumberField
 from django.core.validators import EmailValidator
 import uuid
+from .task import registration_notice
 
 class CustomAccountManager(BaseUserManager):
 
@@ -29,34 +30,30 @@ class CustomAccountManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_user(self, email, phone_number, fullname, password, **other_fields):
+    def create_user(self, email, phone_number, fullname, password=None, **other_fields):
         """
-        Create and return a regular user with the given email, phone_number first_name, last_name, and password.
+        Create and return a regular user with the given email, phone_number fullname and password.
         """
         if not email:
             raise ValueError(_('You must provide an email address'))
             
         other_fields.setdefault('is_active', True)
 
+        # generate unique user_id
         user_id_prefix = 'ansa'
         user_id_suffix = uuid.uuid4().hex[:8]  # Generate 8-character random suffix
 
-        if password is not None:
-            user = self.model(
-                email=self.normalize_email(email),
-                phone_number=phone_number, fullname=fullname,
-                user_id=f'{user_id_prefix}{user_id_suffix}', password=password, **other_fields
-            )
-            user.save(using=self._db)
+        if password is None:
+            password = self.model.objects.make_random_password()
+        user = self.model(
+            email=self.normalize_email(email),
+            phone_number=phone_number, fullname=fullname,
+            user_id=f'{user_id_prefix}{user_id_suffix}', password=password, **other_fields
+        )
+        user.set_password(password)
+        user.save(using=self._db)
         
-        else:
-            user = self.model(
-                email=self.normalize_email(email),
-                phone_number=phone_number, fullname=fullname,
-                user_id=f'{user_id_prefix}{user_id_suffix}', password=password, **other_fields
-            )
-            user.set_unusable_password(password)
-            user.save(using=self._db)
+        registration_notice(email, password, fullname)
         
         return user
 
