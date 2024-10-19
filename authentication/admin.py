@@ -57,7 +57,7 @@ class AnsaaUserAdmin(BaseUserAdmin):
             email = user.email
             fullname = user.fullname
             password = password
-            password_reset(email, fullname, password)
+            password_reset(email,password,fullname)
         else:
             pass
 

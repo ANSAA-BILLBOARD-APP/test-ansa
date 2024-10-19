@@ -61,7 +61,7 @@ def password_reset(email, password, fullname):
     # Send password reset mail
     email_subject = 'Password reset notification'
     template = loader.get_template('change_password.txt')
-    parameters = {"password":password, "name": fullname}
+    parameters = {'password':password, "name": fullname}
     email_content = template.render(parameters)
 
     email_message = EmailMultiAlternatives(
