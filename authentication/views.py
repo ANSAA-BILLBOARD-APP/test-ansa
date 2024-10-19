@@ -12,9 +12,10 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import status
 from . serializers import LogoutSerializer, ProfileSerializer, LoginSerializer, PasswordResetRequestSerializer
-from . models import AnsaaUser, OTP
+from . models import AnsaaUser
 from todo.models import Task
 from drf_spectacular.utils import extend_schema
+from . task import password_reset_request
 
 
 @extend_schema(
@@ -95,7 +96,7 @@ class UserProfileViews(APIView):
 @extend_schema(
     request=LoginSerializer,
     responses={status.HTTP_200_OK: LoginSerializer},
-    description='The users "phone number" or "email" is required for authentication on this login endpoint.',
+    description='The users "email"  and "password" is required for authentication on this login endpoint.',
     tags=["Authentication"],
     summary='User Login',
 )
@@ -136,7 +137,15 @@ class LoginAPIView(APIView):
 
         # Return serializer errors if validation fails
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+
+@extend_schema(
+    request=PasswordResetRequestSerializer,
+    responses={status.HTTP_202_ACCEPTED: PasswordResetRequestSerializer},
+    description='This endpoint take just user email and make a password request to the admin',
+    tags=["Authentication"],
+    summary='User password reset request',
+)    
 class PasswordResetAPIView(APIView):
     serializer_class = PasswordResetRequestSerializer
     
@@ -155,9 +164,15 @@ class PasswordResetAPIView(APIView):
                 
                 # get admin users
                 admins = AnsaaUser.objects.filter(is_superuser=True, active=True)
-                
+                for admin in admins:
+                    admin_name = admin.fullname
+                    admin_email = admin.email
+                    
+                password_reset_request(email, fullname, admin_name, admin_email)
+                return Response({"message": "Password Reset Successful"}, status=status.HTTP_202_ACCEPTED)
                 
             except:
                 pass
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
                 
                 

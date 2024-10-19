@@ -14,6 +14,7 @@ urlpatterns = [
     path('auth/logout/', views.LogoutView.as_view()),
     path('auth/profile/', views.UserProfileViews.as_view()),
     path('auth/login/', views.LoginAPIView.as_view()),
+    path('auth/request-password-reset/', views.PasswordResetAPIView.as_view(), name='request_password_reset'),
     path("auth/api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("", SpectacularSwaggerView.as_view(url_name="schema")),
     path('authentication/', include(ansaa_user_admin.get_urls())),
