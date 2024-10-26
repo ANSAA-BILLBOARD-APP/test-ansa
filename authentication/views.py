@@ -15,7 +15,7 @@ from . serializers import LogoutSerializer, ProfileSerializer, LoginSerializer, 
 from . models import AnsaaUser
 from todo.models import Task
 from drf_spectacular.utils import extend_schema
-from . task import password_reset_request
+from . task import password_reset_request, password_reset_request_confirmation
 
 
 @extend_schema(
@@ -158,17 +158,17 @@ class PasswordResetAPIView(APIView):
             try:
                 # send email to user(requesting) afformining their password reset request
                 user = AnsaaUser.objects.get(email=email)
-                
                 fullname = user.fullname
                 email = user.email
+                password_reset_request_confirmation(email, fullname)
                 
                 # send password reset request to all admin users
                 admin_users = AnsaaUser.objects.filter(is_superuser=True, is_active=True)
                 for admin in admin_users:
-                    print(f"admin fullname: {admin.fullname}, \n admin email: {admin.fullname}")
-                
-                print(f"users fullname: {fullname},\n user email: {email} ")
-                
+                    admin_name = admin.fullname
+                    admin_email = admin.email
+                    password_reset_request(email, fullname, admin_name, admin_email)
+                    
                 return Response({"message": "Password reset request Successful"}, status=status.HTTP_202_ACCEPTED)
                 
             except:
