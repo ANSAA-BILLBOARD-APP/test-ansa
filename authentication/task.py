@@ -89,3 +89,19 @@ def password_reset_request(email, fullname, admin_name, admin_email):
     )
     email_message.content_subtype = 'html'
     EmailThread(email_message).start()
+    
+def password_reset_request_confirmation(email, fullname, admin_name, admin_email):
+    # Send password reset request confirmation to requesting user
+    email_subject = 'Password Reset Request Confirmation'
+    template = loader.get_template('change_password.txt')
+    parameters = {"name": fullname, "email":email, "admin_name":admin_name}
+    email_content = template.render(parameters)
+
+    email_message = EmailMultiAlternatives(
+        email_subject,
+        email_content,
+        settings.EMAIL_HOST_USER,
+        [admin_email]
+    )
+    email_message.content_subtype = 'html'
+    EmailThread(email_message).start()

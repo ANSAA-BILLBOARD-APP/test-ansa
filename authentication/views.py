@@ -9,7 +9,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny # type: ignore
 from rest_framework import status
 from . serializers import LogoutSerializer, ProfileSerializer, LoginSerializer, PasswordResetRequestSerializer
 from . models import AnsaaUser
@@ -156,23 +156,22 @@ class PasswordResetAPIView(APIView):
             email = serializer.validated_data.get("email")
             
             try:
+                # send email to user(requesting) afformining their password reset request
                 user = AnsaaUser.objects.get(email=email)
                 
-                # prepare user details
                 fullname = user.fullname
                 email = user.email
                 
-                # get admin users
-                admins = AnsaaUser.objects.filter(is_superuser=True, active=True)
-                for admin in admins:
-                    admin_name = admin.fullname
-                    admin_email = admin.email
-                    
-                password_reset_request(email, fullname, admin_name, admin_email)
-                return Response({"message": "Password Reset Successful"}, status=status.HTTP_202_ACCEPTED)
+                # send password reset request to all admin users
+                admin_users = AnsaaUser.objects.filter(is_superuser=True, is_active=True)
+                for admin in admin_users:
+                    print(f"admin fullname: {admin.fullname}, \n admin email: {admin.fullname}")
+                
+                print(f"users fullname: {fullname},\n user email: {email} ")
+                
+                return Response({"message": "Password reset request Successful"}, status=status.HTTP_202_ACCEPTED)
                 
             except:
-                pass
+                return Response({"error": "Invalid user creedential"}, status=status.HTTP_400_BAD_REQUEST)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-                
-                
+ 
