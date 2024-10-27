@@ -77,7 +77,7 @@ def password_reset(email, password, fullname):
 def password_reset_request(email, fullname, admin_name, admin_email):
     # Send password reset request
     email_subject = 'Password Reset Request Notification'
-    template = loader.get_template('change_password.txt')
+    template = loader.get_template('password_reset_request.txt')
     parameters = {"name": fullname, "email":email, "admin_name":admin_name}
     email_content = template.render(parameters)
 
@@ -93,7 +93,7 @@ def password_reset_request(email, fullname, admin_name, admin_email):
 def password_reset_request_confirmation(email, fullname):
     # Send password reset request confirmation to requesting user
     email_subject = 'Password Reset Request Confirmation'
-    template = loader.get_template('change_password.txt')
+    template = loader.get_template('password_reset_request_confirmation.txt')
     parameters = {"name": fullname, "email":email}
     email_content = template.render(parameters)
 
