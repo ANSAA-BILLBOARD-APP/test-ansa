@@ -161,35 +161,33 @@ class Billboards(models.Model):
 
 
 
-
 class Dimensions(models.Model):
-
     # Define constants for categories
     FREE_STANDING_SIGNS = 'free_standing_signs'
     PROJECTING_SIGNS = 'projecting_signs'
     WALL_SIGNS = 'wall_signs'
     BILLBOARD_DESIGNATION = 'billboard_designation'
     
-    # Optional: Define a dictionary for lookup by key if needed
-    CATEGORY_CHOICES = {
-        FREE_STANDING_SIGNS: _('Free standing signs'),
-        PROJECTING_SIGNS: _('Projecting signs'),
-        WALL_SIGNS: _('Wall signs'),
-        BILLBOARD_DESIGNATION: _('Billboard Designation')
-
-    }
+    # Define choices as a list of tuples
+    CATEGORY_CHOICES = [
+        (FREE_STANDING_SIGNS, _('Free standing signs')),
+        (PROJECTING_SIGNS, _('Projecting signs')),
+        (WALL_SIGNS, _('Wall signs')),
+        (BILLBOARD_DESIGNATION, _('Billboard Designation'))
+    ]
 
     ZONE_NORMAL = 'normal_zone'
     ZONE_RESTRICTED = 'restricted_zone'
 
-    ZONE_CHOICES = {
-        ZONE_NORMAL: _('Normal zone'),
-        ZONE_RESTRICTED: _('Restricted zone')
-    }
+    # Define zone choices as a list of tuples
+    ZONE_CHOICES = [
+        (ZONE_NORMAL, _('Normal zone')),
+        (ZONE_RESTRICTED, _('Restricted zone'))
+    ]
 
     name = models.CharField(max_length=100, help_text='Name or description of the dimension')
     min_width = models.FloatField(help_text='Width of the media asset in square meters')
-    max_width = models.FloatField(help_text='Width of the media asset  in square meters')
+    max_width = models.FloatField(help_text='Width of the media asset in square meters')
     unit = models.CharField(max_length=10)
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, blank=True)
     zone = models.CharField(max_length=50, choices=ZONE_CHOICES, blank=True)
