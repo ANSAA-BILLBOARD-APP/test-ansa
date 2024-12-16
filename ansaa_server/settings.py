@@ -60,7 +60,7 @@ SPECTACULAR_SETTINGS = {
     # OTHER SETTINGS
 }
 
-
+API_KEY = "Ansa-oasis-key"
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
