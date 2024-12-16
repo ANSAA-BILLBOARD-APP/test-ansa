@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from . serializers import CreateBillboardSerializer, AssetSerializer, ZonesSerializer, DimensionsSerializer, PaymentUpdateSerializer
+from . serializers import CreateBillboardSerializer, AssetSerializer, ZonesSerializer, DimensionsSerializer, PaymentUpdateSerializer, AssetsDetailsSerializer
 from rest_framework.generics import ListAPIView, DestroyAPIView
 from rest_framework import generics
 from rest_framework.generics import RetrieveUpdateAPIView
@@ -98,6 +98,8 @@ class AssetListAPIView(generics.ListAPIView):
         return Billboards.objects.filter(user=user)
 
 
+
+
 @extend_schema(
     request=AssetSerializer,
     responses={status.HTTP_200_OK: AssetSerializer},
@@ -187,6 +189,22 @@ class DimensionsListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Dimensions.objects.all()
     serializer_class = DimensionsSerializer
+
+
+# oasis endpoints
+
+@extend_schema(
+    request=AssetsDetailsSerializer,
+    responses={status.HTTP_200_OK: AssetsDetailsSerializer},
+    description='List all uploaded media assets from database',
+    tags=["Media Assets"],
+    summary='List all uploaded media assets',
+)
+class AssetDetailsListAPIView(generics.ListAPIView):
+    serializer_class = AssetsDetailsSerializer
+    @apikey_required
+    def get_queryset(self):
+        return Billboards.objects.filter(status="completed")
 
 
 @extend_schema(

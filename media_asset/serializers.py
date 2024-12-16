@@ -68,4 +68,18 @@ class PaymentUpdateSerializer(serializers.ModelSerializer):
     def validate_payment_status(self, value):
         if value not in dict(Billboards.PAYMENT_CHOICES):
             raise serializers.ValidationError("Invalid payment status.")
-        return value      
+        return value 
+
+
+class AssetsDetailsSerializer(serializers.ModelSerializer):
+    sub_zone = serializers.SlugRelatedField(
+        queryset=Zones.objects.all(),
+        slug_field='name'
+    )
+
+    class Meta:
+        model = Billboards
+        fields = ['asset_type', 'category', 'zone', 'status', 'sub_zone', 'description',
+                  'vacancy', 'status', 'dimension', 'actual_dimension', 'price', 'payment_status', 'payment_date', 'main_image', 'image_1',
+                  'image_2', 'image_3', 'address', 'city', 'state', 'country', 'company',
+                  'phone_number', 'longitude', 'latitude']   

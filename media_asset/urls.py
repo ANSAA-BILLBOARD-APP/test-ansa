@@ -9,5 +9,8 @@ urlpatterns = [
     path('asset/zones/', views.ZonesListView.as_view(), name='zones-list'),
     path('asset/dimensions/', views.DimensionsListView.as_view(), name='dimensions-list'),
     path('asset/<int:pk>/delete/', views.AssetDeleteAPIView.as_view(), name='asset-delete'),
+
+    # oasis endpoints
     path('billboards/<str:asset_name>/update-payment/', views.UpdatePaymentView.as_view(), name='update-payment'),
+    path('asset/assets-list/', views.AssetDetailsListAPIView.as_view(), name="list_assets"),
 ]
