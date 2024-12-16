@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from . serializers import CreateBillboardSerializer, AssetSerializer, ZonesSerializer, DimensionsSerializer
+from . serializers import CreateBillboardSerializer, AssetSerializer, ZonesSerializer, DimensionsSerializer, PaymentUpdateSerializer
 from rest_framework.generics import ListAPIView, DestroyAPIView
 from rest_framework import generics
 from rest_framework.generics import RetrieveUpdateAPIView
@@ -15,9 +15,11 @@ from .models import Billboards, Zones, Dimensions
 from drf_spectacular.utils import extend_schema
 import logging
 logger = logging.getLogger(__name__)
-from rest_framework.exceptions import ValidationError
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import DatabaseError, IntegrityError
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.shortcuts import get_object_or_404
 
 
 @extend_schema(
@@ -184,3 +186,20 @@ class DimensionsListView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Dimensions.objects.all()
     serializer_class = DimensionsSerializer
+
+
+@extend_schema(
+    request=PaymentUpdateSerializer,
+    responses={status.HTTP_201_CREATED: PaymentUpdateSerializer},
+    description='Upload media asset to the database',
+    tags=["Media Assets"],
+    summary='Upload media asset',
+)
+class UpdatePaymentView(APIView):
+    def post(self, request, asset_name):
+        billboard = get_object_or_404(Billboards, asset_name=asset_name)
+        serializer = PaymentUpdateSerializer(billboard, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'Payment details updated successfully!'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

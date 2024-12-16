@@ -3,15 +3,12 @@ django-phonenumber-field==7.3.0
 djangorestframework==3.15.1
 djangorestframework-simplejwt==5.3.1
 drf-spectacular==0.27.2
-django-admin-material-dashboard
 django-crontab
 jsonschema==4.21.1
 jsonschema-specifications
 phonenumbers==8.13.35
 phonenumberslite==8.13.35
 pillow==10.3.0
-postgrest==0.16.4
-psycopg2-binary==2.9.9
 python-dateutil==2.9.0.post0
 requests==2.31.0
 six==1.16.0

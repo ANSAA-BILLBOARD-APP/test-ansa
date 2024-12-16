@@ -58,3 +58,14 @@ class AssetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Billboards
         fields = '__all__'
+
+
+class PaymentUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Billboards
+        fields = ['payment_status', 'payment_date']
+
+    def validate_payment_status(self, value):
+        if value not in dict(Billboards.PAYMENT_CHOICES):
+            raise serializers.ValidationError("Invalid payment status.")
+        return value      

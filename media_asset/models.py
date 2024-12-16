@@ -80,6 +80,18 @@ class Billboards(models.Model):
         ZONE_NORMAL: _('Normal zone'),
         ZONE_RESTRICTED: _('Restricted zone')
     }
+
+
+    PENDING = 'pending'
+    PAID = 'paid'
+    NOT_PAID = 'not_paid'
+    PAYMENT_CHOICES = {
+        PENDING: _('Pending'),
+        PAID: _('Paid'),
+        NOT_PAID: _('Not_paid'),
+    }
+
+
     asset_name = models.CharField(max_length=10, editable=False)
     asset_type = models.CharField(max_length=50, choices=TYPE_CHOICES, blank=True)
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, blank=True)
@@ -92,6 +104,10 @@ class Billboards(models.Model):
     dimension = models.CharField(max_length=50, blank=True)
     actual_dimension = models.CharField(max_length=50, blank=True)
     price = models.DecimalField(max_digits=30, decimal_places=2, blank=True, null=True)
+    payment_status = models.CharField(
+        max_length=20, choices=PAYMENT_CHOICES, default=PENDING
+    )
+    payment_date = models.DateTimeField(blank=True, null=True)
     main_image = models.URLField(max_length=200, blank=True, null=True)
     image_1 = models.URLField(max_length=200, blank=True, null=True)
     image_2 = models.URLField(max_length=200, blank=True, null=True)
