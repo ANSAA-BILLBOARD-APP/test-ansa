@@ -190,10 +190,10 @@ class DimensionsListView(generics.ListAPIView):
 
 @extend_schema(
     request=PaymentUpdateSerializer,
-    responses={status.HTTP_201_CREATED: PaymentUpdateSerializer},
-    description='Upload media asset to the database',
+    responses={status.HTTP_200_OK: {'message': 'Payment details updated successfully!'}},
+    description='Update payment status and payment date for a billboard asset.',
     tags=["Media Assets"],
-    summary='Upload media asset',
+    summary='Update Payment Details',
 )
 class UpdatePaymentView(APIView):
     def post(self, request, asset_name):

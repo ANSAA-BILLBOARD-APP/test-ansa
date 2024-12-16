@@ -36,7 +36,7 @@ def generate_csv_report(user, time_filter=None, vacancy=None):
     
     output = StringIO()
     writer = csv.writer(output)
-    writer.writerow(['Asset Name', 'Asset Type', 'Category', 'Zone', 'Sub Zone', 'Status', 'Vacancy', 'Dimension', 'actual_dimension', 'Price', 'User', 'qr_code', 'Date'])
+    writer.writerow(['Asset Name', 'Asset Type', 'Category', 'Zone', 'Sub Zone', 'Status', 'Vacancy', 'Dimension', 'Actual_dimension', 'Price', 'Payment status', 'Payment date', 'User', 'Qr_code', 'Date'])
     
     for billboard in billboards:
         writer.writerow([
@@ -50,6 +50,8 @@ def generate_csv_report(user, time_filter=None, vacancy=None):
             billboard.dimension,
             billboard.actual_dimension,
             billboard.price,
+            billboard.get_payment_status_display(),
+            billboard.payment_date,
             billboard.user,
             f"https://dotsassets.com/{billboard.qr_code}",
             billboard.date,
