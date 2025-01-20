@@ -14,3 +14,5 @@ urlpatterns = [
     path('billboards/<str:unique_id>/update-payment/', views.UpdatePaymentView.as_view(), name='update-payment'),
     path('asset/assets-list/', views.AssetDetailsListAPIView.as_view(), name="list_assets"),
 ]
+
+# *VwLd#2j7jAGE-D
