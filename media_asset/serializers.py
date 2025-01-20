@@ -21,14 +21,14 @@ class CreateBillboardSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Billboards
-        fields = ['asset_type', 'category', 'zone', 'status', 'sub_zone', 'description',
-                  'vacancy', 'status', 'dimension', 'actual_dimension', 'price', 'main_image', 'image_1',
-                  'image_2', 'image_3', 'address', 'city', 'state', 'country', 'company',
-                  'phone_number', 'longitude', 'latitude']
+        fields = ['sign_type', 'signage_type', 'sign_format', 'no_of_faces', 'illumination_type', 'category', 'zone', 'status', 'sub_zone', 'description',
+                  'vacancy', 'status', 'dimension', 'actual_size', 'length', 'breadth', 'price', 'payment_status', 'image1', 'image2', 'image3',
+                  'asset_street_address', 'asset_lga', 'state', 'country', 'company_name', 'company_phone', 'asin', 'business_type',
+                  'business_category', 'longitude', 'latitude']
 
     def validate(self, data):
         # Check the fields to determine if the status should be "complete"
-        fields_to_check = ['category', 'zone', 'main_image', 'company', 'asset_type', 'sub_zone']
+        fields_to_check = ['category', 'zone', 'image1', 'company_name', 'sign_type', 'sub_zone', 'business_category', 'business_type']
         if not all(data.get(field) for field in fields_to_check):
             data['status'] = 'pending'
 
@@ -79,7 +79,7 @@ class AssetsDetailsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Billboards
-        fields = ['asset_type', 'category', 'zone', 'status', 'sub_zone', 'description',
-                  'vacancy', 'status', 'dimension', 'actual_dimension', 'price', 'payment_status', 'payment_date', 'main_image', 'image_1',
-                  'image_2', 'image_3', 'address', 'city', 'state', 'country', 'company',
-                  'phone_number', 'longitude', 'latitude']   
+        fields = ['signage_type', 'sign_type', 'sign_format', 'no_of_faces', 'illumination_type', 'length', 'breadth', 'category', 'zone', 'status', 'sub_zone', 'description',
+                  'vacancy', 'status', 'dimension', 'actual_size', 'price', 'payment_status', 'payment_date', 'image1',
+                  'image2', 'image3', 'asset_street_address', 'asset_lga', 'state', 'country', 'company_name',
+                  'company_number', 'asin', 'business_type', 'business_category', 'longitude', 'latitude']   

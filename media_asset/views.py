@@ -138,7 +138,7 @@ class AssetDeleteAPIView(APIView):
 
             
 @extend_schema(
-    description="The endpoint is use to filter media assets by (asset type, zone, status and vacancy).",
+    description="The endpoint is use to filter media assets by (sign type, zone, status and vacancy).",
     summary='Media Search(Filter) endpoint',
     tags=["Media Assets"],
 )
@@ -148,7 +148,7 @@ class AssetSearchAPIView(APIView):
 
     def get(self, request, *args, **kwargs):
         # Retrieve query parameters
-        asset_type = request.query_params.get('asset_type', None)
+        sign_type = request.query_params.get('sign_type', None)
         zone = request.query_params.get('zone', None)
         vacancy = request.query_params.get('vacancy', None)
         status_param = request.query_params.get('status', None)
@@ -156,8 +156,8 @@ class AssetSearchAPIView(APIView):
 
         # Filter billboards based on query parameters
         assets = Billboards.objects.filter(user=user)
-        if asset_type is not None:
-            assets = assets.filter(asset_type=asset_type)
+        if sign_type is not None:
+            assets = assets.filter(sign_type=sign_type)
         if zone is not None:
             assets = assets.filter(zone=zone)
         if status_param is not None:
@@ -216,8 +216,8 @@ class AssetDetailsListAPIView(generics.ListAPIView):
 )
 class UpdatePaymentView(APIView):
     @apikey_required
-    def post(self, request, asset_name):
-        billboard = get_object_or_404(Billboards, asset_name=asset_name)
+    def post(self, request, unique_id):
+        billboard = get_object_or_404(Billboards, unique_id=unique_id)
         serializer = PaymentUpdateSerializer(billboard, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()

@@ -7,10 +7,10 @@ from django.db import models
 
 
 class BillboardsAdmin(admin.ModelAdmin):
-    search_fields = ('user','company','city','dimension', 'actual_dimension', 'asset_name')
-    list_filter = ('company', 'status','vacancy','city')
+    search_fields = ('user','company_name','asset_lga','dimension', 'actual_size', 'unique_id', 'asin')
+    list_filter = ('company_name', 'status','vacancy','business_type')
     ordering = ('-vacancy',)
-    list_display = ('user','asset_name','company','price')
+    list_display = ('user','unique_id','company_name','price')
 
 class ZonesAdmin(admin.ModelAdmin):
     list_display = ('id','name')
