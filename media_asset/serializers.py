@@ -24,7 +24,7 @@ class CreateBillboardSerializer(serializers.ModelSerializer):
         fields = ['sign_type', 'signage_type', 'sign_format', 'no_of_faces', 'illumination_type', 'zone', 'status', 
                   'sub_zone', 'description', 'vacancy', 'dimension', 'actual_size', 'length', 'breadth', 'price', 
                   'payment_status', 'image1', 'image2', 'image3', 'asset_street_address', 'asset_lga', 'state', 
-                  'country', 'asin', 'business_type', 'business_category', 'longitude', 'latitude']
+                  'country', 'asin', 'company_name', 'company_phone', 'business_type', 'business_category', 'longitude', 'latitude']
 
     def validate(self, data):
         validated_data = data.copy()
@@ -79,4 +79,4 @@ class AssetsDetailsSerializer(serializers.ModelSerializer):
         fields = ['signage_type', 'sign_type', 'sign_format', 'no_of_faces', 'illumination_type', 'length', 'breadth', 'zone', 'status', 'sub_zone', 'description',
                   'vacancy', 'status', 'dimension', 'actual_size', 'price', 'payment_status', 'payment_date', 'image1',
                   'image2', 'image3', 'asset_street_address', 'asset_lga', 'state', 'country',
-                   'asin', 'business_type', 'business_category', 'longitude', 'latitude']   
+                   'asin', 'business_type', 'company_name', 'company_phone', 'business_category', 'longitude', 'latitude']   

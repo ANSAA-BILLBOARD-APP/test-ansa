@@ -47,8 +47,8 @@ class Billboards(models.Model):
         STATUS_COMPLETED: _('Completed'),
     }
 
-    VACANCY_VACANT = 'vacant'
-    VACANCY_OCCUPIED = 'occupied'
+    VACANCY_VACANT = 'Vacant'
+    VACANCY_OCCUPIED = 'Occupied'
 
     VACANCY_CHOICES = {
         VACANCY_VACANT: _('Vacant'),
@@ -80,8 +80,8 @@ class Billboards(models.Model):
     # }
 
     # Define constants for Signage Type
-    FIRST_PARTY = 'first_party'
-    THIRD_PARTY = 'third_party'
+    FIRST_PARTY = 'First Party'
+    THIRD_PARTY = 'Third Party'
 
     SIGNAGE_TYPE = {
         FIRST_PARTY: _('First Party'),
@@ -89,37 +89,37 @@ class Billboards(models.Model):
     }
 
     # Define constants for Sign Type
-    WALLDRAPES = 'walldrapes'
-    PROJECTING_SIGNS = 'projecting_signs'
-    WALL_CANOPY_ROOF_SIGNS = 'wall_canopy_roof_signs'
-    NEON_SIGNS = 'neon_signs'
-    _48_SHEETS = '48_sheets'
-    _96_SHEETS = '96_sheets'
-    BRIDGE_PANEL = 'bridge_panel'
-    OVERHEAD_GANTRIES = 'overhead_gantries'
-    LAMP_POSTS = 'lamp_posts'
+    WALLDRAPES = 'Walldrapes'
+    PROJECTING_SIGNS = 'Projecting Signs'
+    WALL_CANOPY_ROOF_SIGNS = 'Wall/Canopy/Roof Signs'
+    NEON_SIGNS = 'Neon Signs'
+    _48_SHEETS = '48 Sheets'
+    _96_SHEETS = '96 Sheets'
+    BRIDGE_PANEL = 'Bridge panel'
+    OVERHEAD_GANTRIES = 'Overhead Gantries'
+    LAMP_POSTS = 'Lamp Posts'
     UNIPOLES = 'unipoles'
-    LED_SCREENS_FILLING_STATIONS = 'led_screens_filling_stations'
+    LED_SCREENS_FILLING_STATIONS = 'LED Screens (Filling stations)'
     
     # Define constants for Sign Type
     SIGN_TYPE= {
         WALLDRAPES: _('Walldrapes'),
-        PROJECTING_SIGNS: _('Projecting signs'),
+        PROJECTING_SIGNS: _('Projecting Signs'),
         WALL_CANOPY_ROOF_SIGNS: _('Wall/Canopy/Roof Signs'),
-        NEON_SIGNS: _('Neon signs'),
-        _48_SHEETS: _('48 sheets'),
+        NEON_SIGNS: _('Neon Signs'),
+        _48_SHEETS: _('48 Sheets'),
         _96_SHEETS: _('96 Sheets'),
         BRIDGE_PANEL: _('Bridge panel'),
         OVERHEAD_GANTRIES: _('Overhead Gantries'),
-        LAMP_POSTS: _('Lamp posts'),
+        LAMP_POSTS: _('Lamp Posts'),
         UNIPOLES: _('Unipoles'),
         LED_SCREENS_FILLING_STATIONS: _('LED Screens (Filling stations)'),
 
     }
 
     # Define constants for Sign format
-    PORTRAIT = 'portrait'
-    LANDSCAPE = 'landscape'
+    PORTRAIT = 'Portrait'
+    LANDSCAPE = 'Landscape'
 
     SIGN_FORMAT = {
         PORTRAIT: _('Portrait'),
@@ -127,9 +127,9 @@ class Billboards(models.Model):
     }
 
     # Define constants for number of face
-    SINGLE = 'single'
-    DOUBLE = 'double'
-    MULTIPLE = 'multiple'
+    SINGLE = 'Single'
+    DOUBLE = 'Double'
+    MULTIPLE = 'Multiple'
 
     NO_OF_FACE = {
         SINGLE: _('Single'),
@@ -138,9 +138,9 @@ class Billboards(models.Model):
     }
 
     # Define constants for illumination type
-    NONE = 'none'
-    EXTERNAL = 'external'
-    INTERNAL = 'internal'
+    NONE = 'None'
+    EXTERNAL = 'External'
+    INTERNAL = 'Internal'
 
     ILLUMINATION_TYPE = {
         NONE: _('None'),
@@ -149,24 +149,24 @@ class Billboards(models.Model):
     }
 
     # Define constants for business type
-    COMMERCIAL_BUSINESS = 'commercial_business'
+    COMMERCIAL_BUSINESS = 'Commercial Business'
 
     BUSINESS_TYPE = {
-        COMMERCIAL_BUSINESS: _('Commercial business'),
+        COMMERCIAL_BUSINESS: _('Commercial Business'),
     }
 
     # Define constants for Sign Type
-    OFFICE_OR_SHOPS = 'office_or_shops'
-    HOTELS_OR_EATERIES = 'hotels_or_eateries'
-    PARKS = 'parks'
-    HOSTELS = 'hostels'
-    COMMERCIAL_BANKS = 'commercial_banks'
-    PRIVATE_MICROFINANCE_BANKS = 'private_microfinance_banks'
+    OFFICE_OR_SHOPS = 'Office or Shops'
+    HOTELS_OR_EATERIES = 'Hotels or Eateries'
+    PARKS = 'Parks'
+    HOSTELS = 'Hostels'
+    COMMERCIAL_BANKS = 'Commercial Banks'
+    PRIVATE_MICROFINANCE_BANKS = 'Private/Microfinance Banks'
 
     
     # Define constants for Business Category
     BUSINESS_CATEGORY= {
-        OFFICE_OR_SHOPS: _('Office or shops'),
+        OFFICE_OR_SHOPS: _('Office or Shops'),
         HOTELS_OR_EATERIES: _('Hotels or Eateries'),
         PARKS: _('Parks'),
         HOSTELS: _('Hostels'),
@@ -287,30 +287,30 @@ class Billboards(models.Model):
             return value
         
         payload = {
-            "signage_type": self.signage_type,
-            "sign_type": self.sign_type,
-            "sign_format": self.sign_format,
-            "no_of_faces": self.no_of_faces,
-            "illumination_type": self.illumination_type,
-            "length": to_serializable(self.length),
-            "breadth": to_serializable(self.breadth),
-            "overall_height": to_serializable(self.length),
-            "asset_lga": self.asset_lga,
-            "asset_Area": to_serializable(self.length * self.breadth),
-            "asset_street_address": self.asset_street_address,
-            "longitude": to_serializable(self.longitude),
-            "latitude": to_serializable(self.latitude),
-            "company_name": self.company_name,
-            "company_phone": self.company_phone,
+            "signageType": self.signage_type,
+            "signType": self.sign_type,
+            "signFormat": self.sign_format,
+            "noOfFaces": self.no_of_faces,
+            "illuminationType": self.illumination_type,
+            "length": str(to_serializable(self.length)),
+            "breadth": str(to_serializable(self.breadth)),
+            "overallHeight": str(to_serializable(self.length)),
+            "assetLGA": self.asset_lga,
+            "assetArea": str(to_serializable(self.length * self.breadth)),
+            "assetStreetAddress": self.asset_street_address,
+            "longitude": str(to_serializable(self.longitude)),
+            "latitude": str(to_serializable(self.latitude)),
+            "companyName": self.company_name,
+            "companyPhone": str(self.company_phone),
             "asin": self.asin,
             "image1": self.image1,
             "image2": self.image2,
             "image3": self.image3,
-            "unique_id": self.unique_id,
-            "vacancy_status": self.vacancy,
-            "business_type": self.business_type,
-            "business_category": self.business_category,
-            "actual_size": to_serializable(self.actual_size),
+            "uniqueId": self.unique_id,
+            "vacancyStatus": self.vacancy,
+            "businessType": self.business_type,
+            "businessCategory": self.business_category,
+            "actualSize": str(to_serializable(self.actual_size)),
         }
 
         headers = {"Content-Type": "application/json"}
