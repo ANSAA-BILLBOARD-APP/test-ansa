@@ -65,13 +65,13 @@ class Billboards(models.Model):
     BILLBOARD_DESIGNATION = 'billboard_designation'
     
     # Optional: Define a dictionary for lookup by key if needed
-    CATEGORY_CHOICES = {
-        FREE_STANDING_SIGNS: _('Free standing signs'),
-        PROJECTING_SIGNS: _('Projecting signs'),
-        WALL_SIGNS: _('Wall signs'),
-        BILLBOARD_DESIGNATION: _('Billboard Designation'),
+    # CATEGORY_CHOICES = {
+    #     FREE_STANDING_SIGNS: _('Free standing signs'),
+    #     PROJECTING_SIGNS: _('Projecting signs'),
+    #     WALL_SIGNS: _('Wall signs'),
+    #     BILLBOARD_DESIGNATION: _('Billboard Designation'),
 
-    }
+    # }
 
     # Define constants for Signage Type
     FIRST_PARTY = 'first_party'
@@ -189,7 +189,7 @@ class Billboards(models.Model):
     }
 
     unique_id = models.CharField(max_length=10, editable=False)
-    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, blank=True)
+
     signage_type = models.CharField(max_length=50, choices=SIGNAGE_TYPE, blank=True)
     sign_type = models.CharField(max_length=50, choices=SIGN_TYPE, blank=True)
     zone = models.CharField(max_length=50, choices=ZONE_CHOICES, blank=True)

@@ -1,3 +1,4 @@
+import requests
 from django.shortcuts import render
 from . serializers import CreateBillboardSerializer, AssetSerializer, ZonesSerializer, DimensionsSerializer, PaymentUpdateSerializer, AssetsDetailsSerializer
 from rest_framework.generics import ListAPIView, DestroyAPIView
@@ -40,8 +41,44 @@ class CreateAssetAPIView(generics.CreateAPIView):
 
         if serializer.is_valid():
             serializer.save(user_id=user)
-                
 
+            oasis_url = "https://41.207.248.246:8189/api/external/asset/notification"
+            
+            payload = {
+                "Signage_Type": request.data.get("Signage_Type", ""),
+                "Sign_Type": request.data.get("Sign_Type", ""),
+                "Sign_Format": request.data.get("Sign_Format", ""),
+                "No_of_Faces": request.data.get("No_of_Faces", ""),
+                "Illumination_Type": request.data.get("Illumination_Type", ""),
+                "Length": request.data.get("Length", ""),
+                "Breadth": request.data.get("Breadth", ""),
+                "Overall_Height": request.data.get("Overall_Height", ""),
+                "Asset_LGA": request.data.get("Asset_LGA", ""),
+                "Asset_Area": request.data.get("Asset_Area", ""),
+                "Asset_Street_Address": request.data.get("Asset_Street_Address", ""),
+                "Longitude": request.data.get("Longitude", ""),
+                "Latitude": request.data.get("Latitude", ""),
+                "Company_Name": request.data.get("Company_Name", ""),
+                "Company_Phone": request.data.get("Company_Phone", ""),
+                "ASIN": request.data.get("ASIN", ""),
+                "Image1": request.data.get("Image1", ""),
+                "Image2": request.data.get("Image2", ""),
+                "Image3": request.data.get("Image3", ""),
+                "Unique_ID": request.data.get("Unique_ID", ""),
+                "Vacancy_Status": request.data.get("Vacancy_Status", ""),
+                "Business_Type": request.data.get("Business_Type", ""),
+                "Business_Category": request.data.get("Business_Category", ""),
+                "Actual_Size": request.data.get("Actual_Size", ""),
+            }
+
+            headers = {"Content-Type": "application/json"}
+
+            try:
+                response = requests.post(oasis_url, json=payload, headers=headers, timeout=10)
+                response.raise_for_status()  # Raises an error for non-200 responses
+                logger.info(f"Successfully sent data to Oasis API: {response.json()}")
+            except requests.exceptions.RequestException as e:
+                logger.error(f"Error sending data to Oasis API: {e}")
             # Check the task status and update if necessary
             try:
                 tasks = Task.objects.filter(user=user, title="Add a Media Asset")
