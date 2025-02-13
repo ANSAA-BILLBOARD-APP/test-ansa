@@ -1,3 +1,5 @@
+import requests
+import logging
 from django.db import models
 from authentication.models import AnsaaUser
 from phonenumber_field.modelfields import PhoneNumberField
@@ -7,6 +9,10 @@ from django.utils import timezone
 import qrcode
 from io import BytesIO
 from django.core.files.base import ContentFile
+from decimal import Decimal
+
+
+logger = logging.getLogger(__name__)
 
 class Zones(models.Model):
     name = models.CharField(max_length=150)
@@ -49,20 +55,20 @@ class Billboards(models.Model):
         VACANCY_OCCUPIED: _('Occupied'),
     }
 
-    ELECTRONIC = 'electronic'
-    STATIC = 'static'
+    # ELECTRONIC = 'electronic'
+    # STATIC = 'static'
 
-    TYPE_CHOICES = {
-        ELECTRONIC: _('Electronic'),
-        STATIC: _('Static')
-    }
+    # TYPE_CHOICES = {
+    #     ELECTRONIC: _('Electronic'),
+    #     STATIC: _('Static')
+    # }
 
 
     # Define constants for categories
-    FREE_STANDING_SIGNS = 'free_standing_signs'
-    PROJECTING_SIGNS = 'projecting_signs'
-    WALL_SIGNS = 'wall_signs'
-    BILLBOARD_DESIGNATION = 'billboard_designation'
+    # FREE_STANDING_SIGNS = 'free_standing_signs'
+    # PROJECTING_SIGNS = 'projecting_signs'
+    # WALL_SIGNS = 'wall_signs'
+    # BILLBOARD_DESIGNATION = 'billboard_designation'
     
     # Optional: Define a dictionary for lookup by key if needed
     # CATEGORY_CHOICES = {
@@ -158,7 +164,7 @@ class Billboards(models.Model):
     PRIVATE_MICROFINANCE_BANKS = 'private_microfinance_banks'
 
     
-    # Define constants for Sign Type
+    # Define constants for Business Category
     BUSINESS_CATEGORY= {
         OFFICE_OR_SHOPS: _('Office or shops'),
         HOTELS_OR_EATERIES: _('Hotels or Eateries'),
@@ -201,8 +207,8 @@ class Billboards(models.Model):
     sign_format = models.CharField(max_length=50, choices=SIGN_FORMAT)
     no_of_faces = models.CharField(max_length=50, choices=NO_OF_FACE)
     illumination_type = models.CharField(max_length=50, choices=ILLUMINATION_TYPE)
-    length = models.CharField(max_length=150)
-    breadth = models.CharField(max_length=150)
+    length = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    breadth = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     dimension = models.CharField(max_length=50, blank=True)
     actual_size = models.CharField(max_length=50, blank=True)
     price = models.DecimalField(max_digits=30, decimal_places=2, blank=True, null=True)
@@ -237,7 +243,7 @@ class Billboards(models.Model):
             unique_id_suffix = uuid.uuid4().hex[:3]
             self.unique_id = f'{unique_id_prefix}{unique_id_suffix}'.upper()
 
-
+        is_new = self.pk is None
         # Generate QR code
         qr_data = f'Asset Name: {self.unique_id}\n' \
                   f'Sign Type: {self.sign_type}\n' \
@@ -269,6 +275,53 @@ class Billboards(models.Model):
         self.qr_code.save(file_name, ContentFile(buffer.getvalue()), save=False)
 
         super().save(*args, **kwargs)
+        if is_new:
+            self.send_to_oasis()
+
+    def send_to_oasis(self):
+        oasis_url = "http://41.207.248.246:8189/api/external/asset/notification"
+
+        def to_serializable(value):
+            if isinstance(value, Decimal):
+                return float(value)
+            return value
+        
+        payload = {
+            "signage_type": self.signage_type,
+            "sign_type": self.sign_type,
+            "sign_format": self.sign_format,
+            "no_of_faces": self.no_of_faces,
+            "illumination_type": self.illumination_type,
+            "length": to_serializable(self.length),
+            "breadth": to_serializable(self.breadth),
+            "overall_height": to_serializable(self.length),
+            "asset_lga": self.asset_lga,
+            "asset_Area": to_serializable(self.length * self.breadth),
+            "asset_street_address": self.asset_street_address,
+            "longitude": to_serializable(self.longitude),
+            "latitude": to_serializable(self.latitude),
+            "company_name": self.company_name,
+            "company_phone": self.company_phone,
+            "asin": self.asin,
+            "image1": self.image1,
+            "image2": self.image2,
+            "image3": self.image3,
+            "unique_id": self.unique_id,
+            "vacancy_status": self.vacancy,
+            "business_type": self.business_type,
+            "business_category": self.business_category,
+            "actual_size": to_serializable(self.actual_size),
+        }
+
+        headers = {"Content-Type": "application/json"}
+
+        try:
+            response = requests.post(oasis_url, json=payload, headers=headers, timeout=10)
+            response.raise_for_status()
+            logger.info(f"Successfully sent data to Oasis API: {response.json()}")
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Error sending data to Oasis API: {e}")
+
 
     class Meta:
         ordering = ['-status']
@@ -280,8 +333,8 @@ class Billboards(models.Model):
         return self.unique_id
 
 
-
 class Dimensions(models.Model):
+    
     # Define constants for categories
     FREE_STANDING_SIGNS = 'free_standing_signs'
     PROJECTING_SIGNS = 'projecting_signs'
