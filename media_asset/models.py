@@ -372,3 +372,5 @@ class Dimensions(models.Model):
 
     def __str__(self):
         return f'{self.name} ({self.min_width}m² and {self.max_width}m²)'
+
+
