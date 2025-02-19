@@ -8,6 +8,7 @@ jsonschema==4.21.1
 jsonschema-specifications
 phonenumbers==8.13.35
 phonenumberslite==8.13.35
+psycopg2
 pillow==10.3.0
 python-dateutil==2.9.0.post0
 requests==2.31.0
