@@ -36,13 +36,13 @@ def generate_csv_report(user, time_filter=None, vacancy=None):
     
     output = StringIO()
     writer = csv.writer(output)
-    writer.writerow(['Unique ID', 'Asset Type', 'Category', 'Zone', 'Sub Zone', 'Status', 'Vacancy', 'Dimension', 'Actual_size', 'Price', 'Payment status', 'Payment date', 'User', 'Qr_code', 'Date'])
+    writer.writerow(['Unique ID', 'Asset Type', 'Signage Type', 'Zone', 'Sub Zone', 'Status', 'Vacancy', 'Dimension', 'Actual_size', 'Price', 'Payment status', 'Payment date', 'User', 'Qr_code', 'Date'])
     
     for billboard in billboards:
         writer.writerow([
             billboard.unique_id,
             billboard.get_sign_type_display(),
-            billboard.get_category_display(),
+            billboard.get_signage_type_display(),
             billboard.get_zone_display(),
             billboard.sub_zone,
             billboard.get_status_display(),
