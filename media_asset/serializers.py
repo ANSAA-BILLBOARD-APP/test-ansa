@@ -1,6 +1,11 @@
-from .models import UserZone, Billboards, Zones, Dimensions
+from .models import UserZone, Billboards, Zones, Dimensions, AmountPerSqFt
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+
+class AmountPerSqFtSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AmountPerSqFt
+        fields = ['amount_per_sq_ft']
 
 class ZonesSerializer(serializers.ModelSerializer):
     class Meta:

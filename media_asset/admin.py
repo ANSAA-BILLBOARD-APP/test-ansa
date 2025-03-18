@@ -1,5 +1,5 @@
 from django.contrib import admin
-from . models import Billboards, Zones, Dimensions
+from . models import Billboards, Zones, Dimensions, AmountPerSqFt
 from django.forms import TextInput, Textarea, CharField
 from django import forms
 from django.db import models
@@ -23,3 +23,4 @@ class DimensionsAdmin(admin.ModelAdmin):
 admin.site.register(Billboards, BillboardsAdmin)
 admin.site.register(Zones, ZonesAdmin)
 admin.site.register(Dimensions, DimensionsAdmin)
+admin.site.register(AmountPerSqFt)

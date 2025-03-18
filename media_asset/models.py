@@ -374,3 +374,8 @@ class Dimensions(models.Model):
         return f'{self.name} ({self.min_width}m² and {self.max_width}m²)'
 
 
+class AmountPerSqFt(models.Model):
+    amount_per_sq_ft = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"${self.amount_per_sq_ft} per sq ft"

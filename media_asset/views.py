@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from . serializers import CreateBillboardSerializer, AssetSerializer, ZonesSerializer, DimensionsSerializer, PaymentUpdateSerializer, AssetsDetailsSerializer
+from . serializers import CreateBillboardSerializer, AssetSerializer, AmountPerSqFtSerializer, ZonesSerializer, DimensionsSerializer, PaymentUpdateSerializer, AssetsDetailsSerializer
 from rest_framework.generics import ListAPIView, DestroyAPIView
 from rest_framework import generics
 from rest_framework.generics import RetrieveUpdateAPIView
@@ -11,7 +11,7 @@ from django.utils import timezone
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from authentication.models import AnsaaUser
 from todo.models import Task
-from .models import Billboards, Zones, Dimensions
+from .models import Billboards, Zones, Dimensions, AmountPerSqFt
 from drf_spectacular.utils import extend_schema
 import logging
 logger = logging.getLogger(__name__)
@@ -21,6 +21,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from .decorator import apikey_required
+
+
+class AmountPerSqFtListView(ListAPIView):
+    queryset = AmountPerSqFt.objects.all()
+    serializer_class = AmountPerSqFtSerializer
 
 
 @extend_schema(
