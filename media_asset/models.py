@@ -10,7 +10,7 @@ import qrcode
 from io import BytesIO
 from django.core.files.base import ContentFile
 from decimal import Decimal
-
+from django.core.exceptions import ValidationError
 
 logger = logging.getLogger(__name__)
 
@@ -377,5 +377,13 @@ class Dimensions(models.Model):
 class AmountPerSqFt(models.Model):
     amount_per_sq_ft = models.DecimalField(max_digits=10, decimal_places=2)
 
+    def clean(self):
+        if AmountPerSqFt.objects.exists() and not self.pk:  # Ensures only one instance can exist
+            raise ValidationError("Only one entry is allowed for AmountPerSqFt.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()  # Triggers validation before saving
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return f"${self.amount_per_sq_ft} per sq ft"
+        return f"NGN {self.amount_per_sq_ft} per sq ft"
