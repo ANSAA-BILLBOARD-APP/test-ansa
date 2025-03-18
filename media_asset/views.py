@@ -22,7 +22,13 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from .decorator import apikey_required
 
-
+@extend_schema(
+    request=AmountPerSqFtSerializer,
+    responses={status.HTTP_200_OK: AmountPerSqFtSerializer},
+    description='this enpoint return amount per square foot',
+    tags=["Media Assets"],
+    summary='return amount per_s_foot',
+)
 class AmountPerSqFtListView(ListAPIView):
     queryset = AmountPerSqFt.objects.all()
     serializer_class = AmountPerSqFtSerializer
