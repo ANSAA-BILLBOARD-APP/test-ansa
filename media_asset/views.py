@@ -30,6 +30,7 @@ from .decorator import apikey_required
     summary='return amount per_s_foot',
 )
 class AmountPerSqFtListView(ListAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = AmountPerSqFt.objects.all()
     serializer_class = AmountPerSqFtSerializer
 
