@@ -126,7 +126,7 @@ class AssetDeleteAPIView(APIView):
         try:
             # Retrieve the object using the primary key (pk)
             asset = Billboards.objects.get(pk=pk)
-            asset_name = asset.asset_name 
+            asset_name = asset.unique_id 
             asset.delete()
 
             # Return a custom response with a success message
@@ -137,7 +137,7 @@ class AssetDeleteAPIView(APIView):
         except Billboards.DoesNotExist:
             # If the asset is not found, return a not found response
             return Response(
-                {"error": "Billboard not found"},
+                {"error": "Asset not found"},
                 status=status.HTTP_404_NOT_FOUND
             )
         except Exception as e:
