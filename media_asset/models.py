@@ -98,7 +98,7 @@ class Billboards(models.Model):
     BRIDGE_PANEL = 'Bridge panel'
     OVERHEAD_GANTRIES = 'Overhead Gantries'
     LAMP_POSTS = 'Lamp Posts'
-    UNIPOLES = 'unipoles'
+    UNIPOLES = 'Unipoles'
     LED_SCREENS_FILLING_STATIONS = 'LED Screens (Filling stations)'
     
     # Define constants for Sign Type
