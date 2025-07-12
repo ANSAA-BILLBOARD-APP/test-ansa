@@ -7,25 +7,38 @@ from django.contrib.auth.models import User
 from .task import password_reset,  registration_notice
 from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.utils.translation import gettext_lazy as _
 
 
 
 class AnsaaUserAdmin(BaseUserAdmin):
     model = AnsaaUser
-    search_fields = ('user_id', 'email', 'fullname', 'phone_number', 'gender')
-    list_filter = ('is_active', 'is_staff')
-    ordering = ('-start_date',)
-    list_display = ('user_id', 'email', 'fullname', 'phone_number', 'is_active', 'is_staff')
+    list_display = ('email', 'fullname', 'is_staff', 'is_active')
+    list_filter = ('is_staff', 'is_active', 'groups')
+    
     fieldsets = (
-        (None, {'fields': ('password', 'email', 'fullname', 'phone_number', 'gender', 'picture', 'last_login',)}),
-        ('Permissions', {'fields': ('is_staff', 'is_superuser', 'is_active')}),
+        (None, {'fields': ('email', 'password')}),
+        (_('Personal Info'), {
+            'fields': ('fullname', 'phone_number', 'gender', 'picture')
+        }),
+        (_('Permissions'), {
+            'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
+        }),
+        (_('Important dates'), {
+            'fields': ('last_login', 'start_date'),
+        }),
     )
+
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'fullname', 'phone_number', 'gender', 'password1', 'password2', 'is_active', 'is_staff', 'is_superuser')}
-        ),
+            'fields': ('email', 'phone_number', 'fullname', 'gender', 'password1', 'password2', 'is_staff', 'is_active'),
+        }),
     )
+
+    search_fields = ('email', 'fullname')
+    ordering = ('-start_date',)
+    filter_horizontal = ('groups', 'user_permissions',)
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
         user = self.get_object(request, object_id)
