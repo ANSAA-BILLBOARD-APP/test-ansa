@@ -7,7 +7,8 @@ from media_asset.models import Billboards
 
 def filter_billboards(user, time_filter=None, vacancy=None):
     now = timezone.now()
-    
+
+    # Determine the start date based on time_filter
     if time_filter == 'week':
         start_date = now - timedelta(days=now.weekday())
     elif time_filter == 'month':
@@ -17,27 +18,34 @@ def filter_billboards(user, time_filter=None, vacancy=None):
     else:
         start_date = None
 
-    # Start with all billboards for the given user
-    queryset = Billboards.objects.filter(user=user)
+    # Superuser sees all billboards; others only their own
+    if user.is_superuser:
+        queryset = Billboards.objects.all()
+    else:
+        queryset = Billboards.objects.filter(user=user)
 
-    # Apply time filter if provided
+    # Apply time filter
     if start_date:
         queryset = queryset.filter(date__gte=start_date)
 
-    # Apply vacancy filter if provided
+    # Apply vacancy filter
     if vacancy is not None:
         queryset = queryset.filter(vacancy=vacancy)
 
     return queryset
 
+
 def generate_csv_report(user, time_filter=None, vacancy=None):
-    # Retrieve the filtered billboards
     billboards = filter_billboards(user, time_filter, vacancy)
-    
+
     output = StringIO()
     writer = csv.writer(output)
-    writer.writerow(['Unique ID', 'Asset Type', 'Signage Type', 'Zone', 'Sub Zone', 'Status', 'Vacancy', 'Dimension', 'Actual_size', 'Price', 'Payment status', 'Payment date', 'User', 'Qr_code', 'Date'])
-    
+    writer.writerow([
+        'Unique ID', 'Asset Type', 'Signage Type', 'Zone', 'Sub Zone',
+        'Status', 'Vacancy', 'Dimension', 'Actual_size', 'Price',
+        'Payment status', 'Payment date', 'User', 'Qr_code', 'Date'
+    ])
+
     for billboard in billboards:
         writer.writerow([
             billboard.unique_id,
@@ -56,13 +64,14 @@ def generate_csv_report(user, time_filter=None, vacancy=None):
             f"https://dotsassets.com/{billboard.qr_code}",
             billboard.date,
         ])
-    
+
     return output.getvalue()
 
 
 def count_billboards(user, time_filter=None, vacancy=None):
     now = timezone.now()
-    
+
+    # Determine the start date based on time_filter
     if time_filter == 'week':
         start_date = now - timedelta(days=now.weekday())
     elif time_filter == 'month':
@@ -72,12 +81,17 @@ def count_billboards(user, time_filter=None, vacancy=None):
     else:
         start_date = None
 
-    queryset = Billboards.objects.filter(user=user)
+    # Superuser sees all billboards; others only their own
+    if user.is_superuser:
+        queryset = Billboards.objects.all()
+    else:
+        queryset = Billboards.objects.filter(user=user)
 
+    # Apply filters
     if start_date:
         queryset = queryset.filter(date__gte=start_date)
 
-    if vacancy:
+    if vacancy is not None:
         queryset = queryset.filter(vacancy=vacancy)
 
     return queryset
