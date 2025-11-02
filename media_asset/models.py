@@ -324,14 +324,14 @@ class Billboards(models.Model):
         headers = {"Content-Type": "application/json"}
         
         try:
-            logger.info(f"Sending data to Oasis API: {oasis_url}")
-            logger.info(f"Payload: {payload}")
+            print(f"Sending data to Oasis API: {oasis_url}")
+            print(f"Payload: {payload}")
             
             response = requests.post(oasis_url, json=payload, headers=headers, timeout=30)
             
-            # Log the raw response for debugging
-            logger.info(f"Oasis API response status: {response.status_code}")
-            logger.info(f"Oasis API response content: {response.text}")
+            # Print the raw response for debugging
+            print(f"Oasis API response status: {response.status_code}")
+            print(f"Oasis API response content: {response.text}")
             
             response.raise_for_status()
             
@@ -339,19 +339,19 @@ class Billboards(models.Model):
             if response.text.strip():
                 try:
                     response_json = response.json()
-                    logger.info(f"Successfully sent data to Oasis API: {response_json}")
+                    print(f"Successfully sent data to Oasis API: {response_json}")
                 except requests.exceptions.JSONDecodeError:
-                    logger.info("Oasis API returned non-JSON response (may be expected)")
+                    print("Oasis API returned non-JSON response (may be expected)")
             else:
-                logger.info("Oasis API returned empty response (likely success)")
+                print("Oasis API returned empty response (likely success)")
                 
         except requests.exceptions.RequestException as e:
-            logger.error(f"Request error sending data to Oasis API: {e}")
+            print(f"Request error sending data to Oasis API: {e}")
             if hasattr(e, 'response') and e.response is not None:
-                logger.error(f"Error response content: {e.response.text}")
+                print(f"Error response content: {e.response.text}")
                 
         except Exception as e:
-            logger.error(f"Unexpected error sending data to Oasis API: {e}")
+            print(f"Unexpected error sending data to Oasis API: {e}")
 
 
     class Meta:
