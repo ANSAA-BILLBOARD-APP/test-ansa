@@ -279,7 +279,7 @@ class Billboards(models.Model):
             self.send_to_oasis()
 
     def send_to_oasis(self):
-        oasis_url = "http://41.207.248.246:8189/api/external/asset/notification"
+        oasis_url = "https://taxapp.services.an.gov.ng/api/external/asset/notification"
 
         def to_serializable(value):
             if isinstance(value, Decimal):
