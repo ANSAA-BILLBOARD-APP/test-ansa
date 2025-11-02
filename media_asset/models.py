@@ -278,7 +278,7 @@ class Billboards(models.Model):
         if is_new:
             self.send_to_oasis()
 
-        def send_to_oasis(self):
+    def send_to_oasis(self):
         oasis_url = "https://taxapp.services.an.gov.ng/api/external/asset/notification"
         
         def to_serializable(value):
