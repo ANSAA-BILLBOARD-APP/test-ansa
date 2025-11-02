@@ -278,49 +278,80 @@ class Billboards(models.Model):
         if is_new:
             self.send_to_oasis()
 
-    def send_to_oasis(self):
-        oasis_url = "https://taxapp.services.an.gov.ng/api/external/asset/notification"
+def send_to_oasis(self):
+    oasis_url = "https://taxapp.services.an.gov.ng/api/external/asset/notification"
 
-        def to_serializable(value):
-            if isinstance(value, Decimal):
-                return float(value)
-            return value
+    def to_serializable(value):
+        if isinstance(value, Decimal):
+            return float(value)
+        if value is None:
+            return ""
+        return value
+    
+    # Calculate asset area properly
+    asset_area = ""
+    if self.length and self.breadth:
+        asset_area = str(float(self.length) * float(self.breadth))
+    
+    # Prepare payload according to the correct format
+    payload = {
+        "SignageType": self.signage_type or "",
+        "SignType": self.sign_type or "",
+        "SignFormat": self.sign_format or "",
+        "NoOfFaces": self.no_of_faces or "",
+        "IlluminationType": self.illumination_type or "",
+        "Length": to_serializable(self.length),
+        "Breadth": to_serializable(self.breadth),
+        "OverallHeight": to_serializable(self.length),
+        "AssetLGA": self.asset_lga or "",
+        "AssetArea": str(to_serializable(self.length * self.breadth)),
+        "AssetStreetAddress": self.asset_street_address or "",
+        "Longitude": to_serializable(self.longitude),
+        "Latitude": to_serializable(self.latitude),
+        "CompanyName": self.company_name or "",
+        "CompanyPhone": str(self.company_phone) if self.company_phone else "",
+        "ASIN": self.asin or "",
+        "Image1": self.image1 or "",
+        "Image2": self.image2 or "",
+        "Image3": self.image3 or "",
+        "UniqueID": self.unique_id or "",
+        "VacancyStatus": self.vacancy or "",
+        "BusinessType": self.business_type or "",
+        "BusinessCategory": self.business_category or "",
+        "ActualSize": to_serializable(self.actual_size),
+    }
+
+    headers = {"Content-Type": "application/json"}
+
+    try:
+        logger.info(f"Sending data to Oasis API: {oasis_url}")
+        logger.info(f"Payload: {payload}")
         
-        payload = {
-            "SignageType": self.signage_type,
-            "SignType": self.sign_type,
-            "SignFormat": self.sign_format,
-            "NoOfFaces": self.no_of_faces,
-            "IlluminationType": self.illumination_type,
-            "Length": str(to_serializable(self.length)),
-            "Breadth": str(to_serializable(self.breadth)),
-            "OverallHeight": str(to_serializable(self.length)),
-            "AssetLGA": self.asset_lga,
-            "AssetArea": str(to_serializable(self.length * self.breadth)),
-            "AssetStreetAddress": self.asset_street_address,
-            "Longitude": str(to_serializable(self.longitude)),
-            "Latitude": str(to_serializable(self.latitude)),
-            "CompanyName": self.company_name,
-            "CompanyPhone": str(self.company_phone),
-            "ASIN": self.asin,
-            "Image1": self.image1,
-            "Image2": self.image2,
-            "Image3": self.image3,
-            "UniqueID": self.unique_id,
-            "VacancyStatus": self.vacancy,
-            "BusinessType": self.business_type,
-            "BusinessCategory": self.business_category,
-            "ActualSize": str(to_serializable(self.actual_size)),
-        }
-
-        headers = {"Content-Type": "application/json"}
-
-        try:
-            response = requests.post(oasis_url, json=payload, headers=headers, timeout=10)
-            response.raise_for_status()
-            logger.info(f"Successfully sent data to Oasis API: {response.json()}")
-        except requests.exceptions.RequestException as e:
-            logger.error(f"Error sending data to Oasis API: {e}")
+        response = requests.post(oasis_url, json=payload, headers=headers, timeout=30)
+        
+        # Log the raw response for debugging
+        logger.info(f"Oasis API response status: {response.status_code}")
+        logger.info(f"Oasis API response content: {response.text}")
+        
+        response.raise_for_status()
+        
+        # Try to parse JSON, but handle cases where response might be empty
+        if response.text.strip():
+            try:
+                response_json = response.json()
+                logger.info(f"Successfully sent data to Oasis API: {response_json}")
+            except requests.exceptions.JSONDecodeError:
+                logger.info("Oasis API returned non-JSON response (may be expected)")
+        else:
+            logger.info("Oasis API returned empty response (likely success)")
+            
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Request error sending data to Oasis API: {e}")
+        if hasattr(e, 'response') and e.response is not None:
+            logger.error(f"Error response content: {e.response.text}")
+            
+    except Exception as e:
+        logger.error(f"Unexpected error sending data to Oasis API: {e}")
 
 
     class Meta:
